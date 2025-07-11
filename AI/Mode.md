@@ -1,5 +1,4 @@
 Model Preparation
-1、Model Preparation
 
 2、https://huggingface.co/
 
