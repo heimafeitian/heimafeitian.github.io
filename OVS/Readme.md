@@ -1,1 +1,275 @@
-OVS
+入门三剑客
+
+
+Open vSwitch on Linux, FreeBSD and NetBSD
+
+https://docs.openvswitch.org/en/latest/intro/install/general/
+
+
+Open vSwitch with DPDK¶
+https://docs.openvswitch.org/en/latest/intro/install/dpdk/
+
+Using Open vSwitch with DPDK
+
+https://docs.openvswitch.org/en/latest/howto/dpdk/
+
+
+1、Install DPDK
+===============================================================================================
+1、Download the DPDK sources, extract the file and set DPDK_DIR:
+
+$ cd /home/jack
+$ wget https://fast.dpdk.org/rel/dpdk-20.11.1.tar.xz
+$ tar xf dpdk-20.11.1.tar.xz
+$ export DPDK_DIR=/home/jack/dpdk-stable-20.11.1
+$ cd $DPDK_DIR
+
+
+
+#Make and Install OVS-DPDK (Makefile, earlier than DPDK 20.08)
+./boot.sh
+#After DPDK code changing, recompiling OVS-DPDK needs to reconfiguration unless you're using DPDK shared library
+./configure --with-dpdk=/root/dpdk/x86_64-native-linuxapp-gcc
+#Add cflags like this: make -j CFLAGS=“-g -march=native”
+make -j
+make install
+
+Configure and install DPDK using Meson
+=========================================20.11
+Build and install the DPDK library:
+
+$ export DPDK_BUILD=$DPDK_DIR/build
+$ meson build
+$ ninja -C build
+$ sudo ninja -C build install
+$ sudo ldconfig
+Check if libdpdk can be found by pkg-config:
+
+$ pkg-config --modversion libdpdk
+
+export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
+
+pkg-config --modversion libdpdk
+
+===========================================================================================
+
+
+OVS install
+==================================================================================================
+./boot.sh
+#dpdk meson build includes static and shared. So only need to set --with-dpdk=static/shared in ovs
+./configure --with-dpdk=static
+
+
+make -j $(nproc)
+make install -j $(nproc)
+
+VFIO
+=====================================================================================
+Once VT-d is correctly configured, load the required modules and bind the NIC to the VFIO driver:
+modprobe vfio
+modprobe vfio-pci
+
+/usr/bin/chmod a+x /dev/vfio
+/usr/bin/chmod 0666 /dev/vfio/*
+$ $DPDK_DIR/usertools/dpdk-devbind.py --bind=vfio-pci 0000:1a:00.0
+$ $DPDK_DIR/usertools/dpdk-devbind.py --status
+==========================================================================
+配置巨页
+======================================================================
+echo 2048 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mkdir /mnt/huge
+mount -t hugetlbfs nodev /mnt/huge
+
+
+or
+
+echo 100 > /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+mkdir /mnt/huge
+mount -t hugetlbfs pagesize=1GB /mnt/huge
+
+mount -t hugetlbfs -o pagesize=1G none /dev/hugepages
+
+or
+
+grub
+
+
+cat /proc/cmdline
+BOOT_IMAGE=/boot/vmlinuz-4.19.82 root=UUID=42662290-16ca-4819-8713-6aa968734014 ro default_hugepagesz=2M hugepagesz=2M hugepages=1024 iommu=on intel_iommu=on
+default_hugepagesz=2M hugepagesz=2M hugepages=1024
+
+vim /etc/default/grub 
+GRUB_CMDLINE_LINUX="default_hugepagesz=2M hugepagesz=2M hugepages=1024 iommu=on intel_iommu=on"
+
+update-grub
+reboot
+
+centos
+
+grub2-mkconfig -o /boot/grub2/grub.cfg
+==========================================================================================================
+
+
+check
+
+./dpdk-testpmd  -c 0xff -n 4  -w 0000:4b:00.0 -a 0000:4b:00.1 -- -i --forward-mode=rxonly --rxq=4 --txq=4
+
+
+
+============================================================================================================
+
+Setup OVS
+
+#Stop/Clean DPDK and OVS processes/files
+pkill -9 ovs
+rm -rf /usr/local/var/run/openvswitch
+rm -rf /usr/local/etc/openvswitch/
+rm -f /usr/local/etc/openvswitch/conf.db
+
+mkdir -p /usr/local/etc/openvswitch
+mkdir -p /usr/local/var/run/openvswitch
+
+
+export OVS_DIR=/home/jack/openvswitch-2.16.0
+cd $OVS_DIR
+
+
+mkdir -p /usr/local/var/log/openvswitch
+
+
+
+#Setup OVS DataBase
+=========================================================================================
+配置&启动数据库
+设置Ovs-dpdk参数
+启动守护进程
+
+ovsdb-tool create /usr/local/etc/openvswitch/conf.db vswitchd/vswitch.ovsschema
+
+
+export DB_SOCK=/usr/local/var/run/openvswitch/db.sock
+export PATH=$PATH:/usr/local/share/openvswitch/scripts
+
+
+ovsdb-server --remote=punix:/usr/local/var/run/openvswitch/db.sock \
+--remote=db:Open_vSwitch,Open_vSwitch,manager_options \
+--private-key=db:Open_vSwitch,SSL,private_key \
+--certificate=db:Open_vSwitch,SSL,certificate \
+--bootstrap-ca-cert=db:Open_vSwitch,SSL,ca_cert \
+--pidfile --detach --log-file
+ 
+ 
+ 
+ovs-vsctl --no-wait init
+ovs-vswitchd --pidfile --detach --log-file
+ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
+ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem="2048"
+ovs-vsctl --no-wait set Open_vSwitch . other_config:pmd-cpu-mask=0x6
+ovs-ctl --no-ovsdb-server --db-sock="$DB_SOCK" start
+
+=========================================================================
+Validating
+DPDK support can be confirmed by validating the dpdk_initialized boolean value from the ovsdb. A value of true means that the DPDK EAL initialization succeeded:
+$ ovs-vsctl get Open_vSwitch . dpdk_initialized
+true
+
+Additionally, the library version linked to ovs-vswitchd can be confirmed with either the ovs-vswitchd logs, or by running either of the commands:
+
+$ ovs-vswitchd --version
+ovs-vswitchd (Open vSwitch) 2.9.0
+DPDK 17.11.0
+$ ovs-vsctl get Open_vSwitch . dpdk_version
+"DPDK 17.11.0"
+
+=======================================================================================
+
+At this point you can use ovs-vsctl to set up bridges and other Open vSwitch features. Seeing as we've configured DPDK support, 
+we will use DPDK-type ports.
+ For example, to create a userspace bridge named br0 and add two dpdk ports to it, run:
+ 
+$ ovs-vsctl add-br br0 -- set bridge br0 datapath_type=netdev
+$ ovs-vsctl add-port br0 myportnameone -- set Interface myportnameone \
+    type=dpdk options:dpdk-devargs=0000:06:00.0
+$ ovs-vsctl add-port br0 myportnametwo -- set Interface myportnametwo \
+    type=dpdk options:dpdk-devargs=0000:06:00.1
+ 
+Ports and Bridges¶
+ovs-vsctl can be used to set up bridges and other Open vSwitch features. Bridges should be created with a datapath_type=netdev:
+
+$ ovs-vsctl add-br br0 -- set bridge br0 datapath_type=netdev
+
+ovs-vsctl can also be used to add DPDK devices. ovs-vswitchd should print the number of dpdk devices found in the log file:
+
+$ ovs-vsctl add-port br0 dpdk-p0 -- set Interface dpdk-p0 type=dpdk \
+    options:dpdk-devargs=0000:01:00.0
+$ ovs-vsctl add-port br0 dpdk-p1 -- set Interface dpdk-p1 type=dpdk \
+    options:dpdk-devargs=0000:01:00.1
+ 
+
+创建网桥br0，并绑定DPDK端口
+
+ovs-vsctl add-br br0 -- set bridge br0 datapath_type=netdev
+
+ovs-vsctl add-port br0 phy0 -- set Interface phy0 type=dpdk options:dpdk-devargs=0000:4b:00.0 
+ovs-vsctl add-port br0 phy1 -- set Interface phy1 type=dpdk options:dpdk-devargs=0000:4b:00.1 
+ovs-vsctl show
+
+
+#Start vswitchd
+ovs-vswitchd --pidfile unix:/usr/local/var/run/openvswitch/db.sock --log-file
+#If you want to debug ovs, using the following.
+gdb --pid `cat /usr/local/var/run/openvswitch/ovs-vswitchd.pid`
+
+
+After the DPDK ports get added to switch, a polling thread continuously polls DPDK devices and consumes 100% of the core, as can be checked from top and ps commands:
+
+$ top -H
+$ ps -eLo pid,psr,comm | grep pmd
+
+
+To stop ovs-vswitchd & delete bridge, run:
+
+$ ovs-appctl -t ovs-vswitchd exit
+$ ovs-appctl -t ovsdb-server exit
+$ ovs-vsctl del-br br0
+
+#Show the topo of your switch
+ovs-vsctl show
+
+
+PHY-PHY¶
+Add a userspace bridge and two dpdk (PHY) ports:
+
+# Add userspace bridge
+$ ovs-vsctl add-br br0 -- set bridge br0 datapath_type=netdev
+
+# Add two dpdk ports
+$ ovs-vsctl add-port br0 phy0 -- set Interface phy0 type=dpdk \
+      options:dpdk-devargs=0000:4b:00.0 ofport_request=1
+
+$ ovs-vsctl add-port br0 phy1 -- set Interface phy1 type=dpdk \
+      options:dpdk-devargs=0000:4b:00.1 ofport_request=2
+Add test flows to forward packets between DPDK port 0 and port 1:
+
+# Clear current flows
+$ ovs-ofctl del-flows br0
+
+# Add flows between port 1 (phy0) to port 2 (phy1)
+$ ovs-ofctl add-flow br0 in_port=1,action=output:2
+$ ovs-ofctl add-flow br0 in_port=2,action=output:1
+Transmit traffic into either port. You should see it returned via the other.
+
+
+#Dump flows
+#Check flows you/controller add
+ovs-ofctl dump-flows br0
+#Check flows really exist in vswitchd. -m or --more, gives some more info, --names, gives the names of the ports rather than numbers
+ovs-appctl dpctl/dump-flows --more --names
+ 
+
+https://zhuanlan.zhihu.com/p/382587013 
+https://www.jianshu.com/p/20f20bea18cf
+
+
+
