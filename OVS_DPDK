@@ -266,8 +266,9 @@ Transmit traffic into either port. You should see it returned via the other.
 ovs-ofctl dump-flows br0
 #Check flows really exist in vswitchd. -m or --more, gives some more info, --names, gives the names of the ports rather than numbers
 ovs-appctl dpctl/dump-flows --more --names
+ 
 
-
-
+https://zhuanlan.zhihu.com/p/382587013 
+https://www.jianshu.com/p/20f20bea18cf
 
 
