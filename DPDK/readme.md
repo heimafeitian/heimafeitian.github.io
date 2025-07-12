@@ -1,4 +1,9 @@
 DPDK
+
+Intel:
+https://www.intel.cn/content/www/cn/zh/developer/topic-technology/networking/dpdk.html
+
+
 L3FWD:
 meson -Dlibdir=lib -Dexamples=l3fwd -Dc_args=-DRTE_LIBRTE_I40E_16BYTE_RX_DESC --default-library=static x86_64-nativelinuxapp-gcc build2
 
