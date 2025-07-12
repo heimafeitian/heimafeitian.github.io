@@ -394,3 +394,24 @@ ethtool -N enp24s0f0 flow-type udp4 dst-port 250 user-def 0x8000000000000000 act
 
 
 ethtool -N enp24s0f0 flow-type udp4 src-port 0 m 0xfffe dst-port 250 user-def 0x8000000000000000 action 0 loc 0
+
+
+
+[root@icelake-39 0000:ca:00.0]# dmesg -C
+
+[root@dcpae-centos-71-jack 0000:18:00.0]# pwd
+/sys/kernel/debug/i40e/0000:18:00.0
+
+
+
+[root@icelake-39 0000:ca:00.0]# echo read 0x000b4000 >command
+
+[root@icelake-39 0000:ca:00.0]# dmesg
+
+[705818.761611] i40e 0000:ca:00.0: read: 0x000b4000 = 0x00000000
+
+
+i40e_ethtool.c
+
+
+
