@@ -1756,6 +1756,450 @@ int main(int argc, char **argv) {
         rte_eth_dev_close(portid);
     }
     printf("Bye...\n");
+
+
+两口bond，每个PFU接管6个Vf，2个N3，2个N6，2个RAW
+
+./dpdk-testpmd -c 0xff -a 0000:1a:11.0  -n 4 --log-level=8  --log-level=pmd.net.iavf.init:8  --log-level=pmd.net.iavf.driver:8 -- -i --rxq=16 --txq=16   --forward-mode=rxonly
+
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0 -a 0000:1a:01.1 -a 0000:1a:01.2    --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+
+                                            N30       N60           RAW0          N31           N61           RAW1
+python3 dpdk-devbind.py --bind=vfio-pci 0000:1a:01.0 0000:1a:01.1 0000:1a:01.2 0000:1a:11.0 0000:1a:11.1 0000:1a:11.2
+
+python3 dpdk-devbind.py --bind=vfio-pci 0000:1a:01.3 0000:1a:01.4 0000:1a:01.5 0000:1a:11.3 0000:1a:11.4 0000:1a:11.5
+
+./dpdk-testpmd -c 0xff -a 0000:1a:01.0  -n 4 -- -i --rxq=16 --txq=16   --forward-mode=rxonly 
+
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0 -a 0000:1a:01.1 -a 0000:1a:01.2 -a 0000:1a:11.0 -a 0000:1a:11.1 -a 0000:1a:11.2   --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+ 
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.3 -a 0000:1a:01.4 -a 0000:1a:01.5 -a 0000:1a:11.3 -a 0000:1a:11.4 -a 0000:1a:11.5    --file-prefix=pfu2 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+
+./dpdk-testpmd -c 0xff -a 0000:1a:11.0   -n 4 --log-level=8  --log-level=pmd.net.iavf.init:8  --log-level=pmd.net.iavf.driver:8 -- -i --rxq=16 --txq=16   --forward-mode=rxonly
+
+
+
+
+
+
+not reproduction
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0 -a 0000:1a:01.1 -a 0000:1a:01.2 --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.3 -a 0000:1a:01.4 -a 0000:1a:01.5  --file-prefix=pfu2 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+not reproduction
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0  --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.3  --file-prefix=pfu2 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+reproduction
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0 -a 0000:1a:01.1 -a 0000:1a:01.2 -a 0000:1a:11.0 --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.3 -a 0000:1a:01.4 -a 0000:1a:01.5 -a 0000:1a:11.3 --file-prefix=pfu2 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+not reproduction
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0  -a 0000:1a:11.0 --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.3  -a 0000:1a:11.3 --file-prefix=pfu2 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+reproduction
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0 -a 0000:1a:01.1 -a 0000:1a:11.0 --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.3 -a 0000:1a:01.4 -a 0000:1a:11.3 --file-prefix=pfu2 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+
+
+
+not reproduction
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0 -a 0000:1a:01.1 -a 0000:1a:11.0   -a 0000:1a:01.3 -a 0000:1a:01.4 -a 0000:1a:11.3 --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+
+PFU
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0 -a 0000:1a:01.1 -a 0000:1a:01.2 -a 0000:1a:11.0 -a 0000:1a:11.1 -a 0000:1a:11.2   --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+ 
+ IPU
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.3 -a 0000:1a:01.4 -a 0000:1a:01.5 -a 0000:1a:11.3   --file-prefix=pfu2 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+
+
+one
+
+./dpdk-testpmd -c 0xff -n 4 -a 0000:1a:01.0 -a 0000:1a:01.1 -a 0000:1a:01.2 -a 0000:1a:11.0 -a 0000:1a:11.1 -a 0000:1a:11.2  -a 0000:1a:01.3 -a 0000:1a:01.4 -a 0000:1a:01.5 -a 0000:1a:11.3 --file-prefix=pfu1 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+
+
+
+journalctl  --since "2022-1-7 00:20" --dmesg
+
+
+
+
+
+
+
+匹配业务地址打mark
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / rss / end
+
+上行基于内层SIP做RSS
+flow create 0 ingress pattern eth / ipv4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv6 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv6 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+
+下行基于外层dip做RSS
+flow create 0 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+
+
+import sys
+from scapy.contrib.gtp import *
+
+
+pkt = Ether(dst="3E:31:44:23:19:FB")/IP(dst="192.168.0.1")/UDP(sport=23,dport=2152)\
+/GTP_U_Header(gtp_type=255, teid=0x123456)/IP(dst="192.168.1.1", src="192.168.2.1")/("X"*480)
+
+sendp(pkt,iface="ens786",count=1,inter=1)
+
+
+pkt = Ether(dst="3E:31:44:23:19:FB")/IP(dst="192.168.2.1")/UDP(sport=23,dport=2152)/("X"*480)
+
+sendp(pkt,iface="ens786",count=1,inter=1)
+
+
+
+testpmd> port 0/queue 2: received 1 packets
+  src=00:23:7D:6D:61:37 - dst=3E:31:44:23:19:FB - type=0x0800 - length=550 - nb_segs=1 - RSS hash=0xe60786c2 - RSS queue=0x2 - FDIR matched ID=0x1 - hw ptype: L2_ETHER L3_IPV4_EXT_UNKNOWN TUNNEL_GTPU INNER_L3_IPV4_EXT_UNKNOWN INNER_L4_NONFRAG  - sw ptype: L2_ETHER L3_IPV4 L4_UDP  - l2_len=14 - l3_len=20 - l4_len=8 - VXLAN packet: packet type =32913, Destination UDP port =2152, VNI = 4660 - Receive queue=0x2
+  ol_flags: PKT_RX_RSS_HASH PKT_RX_FDIR PKT_RX_L4_CKSUM_GOOD PKT_RX_IP_CKSUM_GOOD PKT_RX_FDIR_ID PKT_RX_OUTER_L4_CKSUM_UNKNOWN
+
+testpmd>
+testpmd> port 0/queue 2: received 1 packets
+  src=00:23:7D:6D:61:37 - dst=3E:31:44:23:19:FB - type=0x0800 - length=522 - nb_segs=1 - RSS hash=0xe60786c2 - RSS queue=0x2 - hw ptype: L2_ETHER L3_IPV4_EXT_UNKNOWN L4_UDP  - sw ptype: L2_ETHER L3_IPV4 L4_UDP  - l2_len=14 - l3_len=20 - l4_len=8 - Receive queue=0x2
+  ol_flags: PKT_RX_RSS_HASH PKT_RX_L4_CKSUM_GOOD PKT_RX_IP_CKSUM_GOOD PKT_RX_OUTER_L4_CKSUM_UNKNOWN
+
+
+
+
+
+
+
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 0 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 1 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / end actions mark id 1 / rss / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+
+
+    
     return ret;
 }
 
