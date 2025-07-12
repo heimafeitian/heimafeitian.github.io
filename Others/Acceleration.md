@@ -1,0 +1,10 @@
+00 AMX  
+01 QAT  
+02 DLB  
+03 DSA  
+04 IAA  
+05 AES  
+06 ISA-L  
+07 HSDLB  
+09 AVX512_GFNI  
+10 vRANBoost
