@@ -1,0 +1,123 @@
+low create 2 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 2 ingress pattern eth / ipv4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+
+flow create 3 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 3 ingress pattern eth / ipv4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+
+
+flow create 4 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 4 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+flow create 4 ingress pattern eth / ipv4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 4 ingress pattern eth / ipv4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+
+flow create 5 ingress pattern eth / ipv4 / end actions rss types ipv4 l3-dst-only end key_len 0 queues end / end
+flow create 5 ingress pattern eth / ipv6 / end actions rss types ipv6 l3-dst-only end key_len 0 queues end / end
+flow create 5 ingress pattern eth / ipv4 / udp / gtpu / ipv4 / end actions rss types ipv4 l3-src-only end key_len 0 queues end / end
+flow create 5 ingress pattern eth / ipv4 / udp / gtpu / ipv6 / end actions rss types ipv6 l3-src-only end key_len 0 queues end / end
+
+
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / end actions mark id 1 / end
+flow create 2 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / end actions mark id 1 / end
+
+
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / end actions mark id 1 / end
+flow create 3 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / end actions mark id 1 / end
+
+
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / end actions mark id 1 / end
+flow create 4 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / end actions mark id 1 / end
+
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.1 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.2 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.3 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.4 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.5 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.6 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.7 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.8 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.9 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.10 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.11 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.12 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.13 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.14 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.15 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.16 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.17 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.18 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.19 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.20 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.21 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.22 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.23 / udp / gtpu / end actions mark id 1 / end
+flow create 5 ingress pattern eth / ipv4 dst is 192.168.0.24 / udp / gtpu / end actions mark id 1 / end
