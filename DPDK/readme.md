@@ -1,9 +1,13 @@
 DPDK
-Flow Bifurcation
+Flow Bifurcation/Day02-Session05-JingjingWu-Userspace2016.pdf
 
-Netmap
+Netmap/
+netmap a novel framework for fast packet IO.pdf
+Revisiting Network IO APIs of the netmap Framework.pdf
 
-virtio_user
+virtio_user/
+Day02-Session02-Steve Liang-DPDKUSASummit2016 (1).pdf
+VIRTIO-USER A New Versatile Channel for Kernel-Bypass Networks.pdf
 
 DPDK Golden Deck - Overview - 20.11.pptx
 
