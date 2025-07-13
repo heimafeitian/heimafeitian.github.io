@@ -1,7 +1,5 @@
 597767-WW32 2021 Intel Ethernet Controller E810 MoW.pdf
-
 608515_NVMe-oF for IEP with RDMA Config Guide_Rev2.1.pdf
-
 613875_Intel® Ethernet Controller E810 Datasheet_Rev2.8.pdf
 616943-E810 SpecUpdate Rev2.9.pdf
 620466_IntelNDA-E810-CQDA2-Q3-2022-Performance.pdf
@@ -12,6 +10,16 @@
 643709-E810-2CQDA2 User Guide_Rev0.5.pdf
 E810_Datasheet_Rev2.3.pdf
 Intel Ethernet Network Adapter E810-CQDA1_CQDA2_641671-006.pdf
+
+/
+800 Series Linux Performance Tuning Guide_Rev1.1.pdf
+609008_Intel® Ethernet Controller E810 ADQ Config Guide_Rev2.9.pdf
+Connorsville - Intel® Ethernet 800 Series_E830_Collateral Resources and Deliverables-UAM-82469.pdf
+Intel Ethernet 800 Series_NDA Use Only v2.pptx
+Intel®-Ethernet-800-Series-Frequently-Asked-Questions-(FAQs).pdf
+Intel-Ethernet-800-Series-30-3-30-6.pptx
+
+
 
 
 02-Comms usage on E810.pdf
