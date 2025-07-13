@@ -1,4 +1,4 @@
-<img width="1139" height="780" alt="image" src="https://github.com/user-attachments/assets/8525b373-fd44-4cdb-be6e-dbf23ae688fc" />615266-800 Series Controllers Migration Guide_Rev2.0.pdf
+Migration Guide_Rev2.0.pdf
 617015_E810 DDP Technology Guide_rev3_0.pdf
 618651-E810 DDP for Comms TechGuide_Rev2.2.pdf
 container-bare-metal-for-2nd-3rd-generation-intel-xeon-scalable-processor.pdf
