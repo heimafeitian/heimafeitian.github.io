@@ -43,5 +43,46 @@ CVL DPDK ConfigGuide/
 826382_Intel® Ethernet Controller E800 Series DPDK Config Guide Rev1.0.pdf
 DPDK_ETHDEV_Foundation.pdf
 
+CVL Feature Summary/
+607252_Columbiaville NDA Feature Summary_Rev4_10.pdf
+630155_Intel® Ethernet Controller E810 Feature Summary_rev4_4.pdf
+645272 - E810 eSwitch switchdev Mode TechConfigGuide_Rev1.0.pdf
+
+RDMA/
+Intel® Ethernet 800 Series Linux Flow Control Configuration Guide for RDMA Use Cases
+https://cdrdv2.intel.com/v1/dl/getContent/635330
+
+Performance Testing Confirms ADQ Accelerates NVMe over TCP in Linux Kernel Environment
+https://cdrdv2.intel.com/v1/dl/getContent/738055
+
+NVM Express over TCP with SPDK for Intel® Ethernet Products with ADQ Configuration Guide
+https://cdrdv2.intel.com/v1/dl/getContent/633368
+
+NVM Express over TCP with Linux Kernel for Intel® Ethernet Products with ADQ Configuration Guide
+https://cdrdv2.intel.com/v1/dl/getContent/691440
+
+VMware vSAN with RDMA Acceleration Using Intel® Ethernet 800 Series Network Adapters Presentation
+https://cdrdv2.intel.com/v1/dl/getContent/726746
+
+Intel® Ethernet RDMA FAQ 20-Mar-2018
+https://cdrdv2.intel.com/v1/dl/getContent/573552
+
+NVMe over Fabric with SPDK Using RDMA*
+https://cdrdv2.intel.com/v1/dl/getContent/644897
+
+NVMe over Fabrics Using RDMA*
+https://cdrdv2.intel.com/v1/dl/getContent/644894
+
+NVM Express over TCP for Intel® Ethernet Products Configuration Guide
+https://cdrdv2.intel.com/v1/dl/getContent/618600
+
+NVM Express over Fabrics with SPDK for Intel® Ethernet Products with RDMA Configuration Guide
+https://cdrdv2.intel.com/v1/dl/getContent/613986
+
+NVM Express over Fabrics for Intel® Ethernet Products with RDMA Configuration Guide
+https://cdrdv2.intel.com/v1/dl/getContent/608515
+
+Intel® Ethernet Network Adapter E810-CQDA2 RDMA Throughput Performance Report - Large Message Sizes
+https://cdrdv2.intel.com/v1/dl/getContent/639582
 
 
