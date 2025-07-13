@@ -29,3 +29,19 @@ ethernet cables and transceivers tech guide.pdf
 Ethernet solutions for Comms Sept 24.pdf
 Intel Ethernet 101 - Internal Only-791247-002.pptx
 Intel Ethernet Adapter One-Pagers Shipping and Pre-Production-UAM-824675.pptx
+
+
+CVL DPDK ConfigGuide/
+610231-e810-dpdk19.11-config-guide-rev3-1.pdf
+633514-E810 DPDK 20.11 ConfigGuide_Rev1.1.pdf
+638099_800 Series Linux QinQ ConfigGuide_Rev1.1.pdf
+644882-E810 DPDK 21.05 ConfigGuide Rev1.0.pdf
+682331_E810 DPDK 21.11 Config Guide Rev1.0.pdf
+724057_E810 DPDK 22.03 Config Guide Rev1.0.pdf
+764257_22.11_23.03_E810 DPDK ConfigGuide_764257_rev1-1.pdf
+826382_Intel_Ethernet_Controller_800_Series_DPDK_Configuration_Guide_Rev1.0.pdf
+826382_Intel® Ethernet Controller E800 Series DPDK Config Guide Rev1.0.pdf
+DPDK_ETHDEV_Foundation.pdf
+
+
+
