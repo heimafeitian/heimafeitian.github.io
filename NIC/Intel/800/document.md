@@ -14,6 +14,11 @@ E810_Datasheet_Rev2.3.pdf
 Intel Ethernet Network Adapter E810-CQDA1_CQDA2_641671-006.pdf
 
 
-
+02-Comms usage on E810.pdf
+02-CVL Packet processing.pdf
+03-DCF Cap of Trust VF.pdf
+04-ADV_AVF_RSS_FDIR.pdf
+dpdk_cvl_readout - 20.02_20.05.pdf
+DPDK_ETHDEV_Foundation.pdf
 
 
