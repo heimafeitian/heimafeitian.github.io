@@ -1,0 +1,235 @@
+2VF 1C/1T
+
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app# ./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 --vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 1,10 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly --desc-nb=256
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:76:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_asym,socket id: 0, max queue pairs: 0
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:7a:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_asym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev crypto_scheduler_pmd_1
+CRYPTODEV: Initialisation parameters - name: crypto_scheduler_pmd_1,socket id: 0, max queue pairs: 8
+cryptodev_scheduler_create() line 138:   Scheduling mode = round-robin
+cryptodev_scheduler_create() line 193:   Packet ordering = disable
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:7a:00.1_qat_sym
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:76:00.1_qat_sym
+Allocated pool "sess_mp_0" on socket 0
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,30000000,30000000,10579011,8015520,6.443,3.299,310.394
+10,128,32,30000000,30000000,11197359,8648608,6.368,6.521,314.069
+10,256,32,30000000,30000000,10880908,8428331,6.342,12.989,315.354
+10,512,32,30000000,30000000,11371565,8924078,6.271,25.686,318.929
+10,1024,32,30000000,30000000,11474267,9050293,6.226,51.003,321.239
+10,2048,32,30000000,30000000,11844774,9334857,6.243,102.282,320.370
+
+
+
+
+
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/usertools# ./dpdk-devbind.py -b vfio-pci 0000:76:00.1 0000:7a:00.1
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/usertools# cd ..
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2# cd build/app/
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app# ./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+> --vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 1,10 -n 6 \
+> -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+> --devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly --desc-nb=256
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:76:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_asym,socket id: 0, max queue pairs: 0
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:7a:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_asym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev crypto_scheduler_pmd_1
+CRYPTODEV: Initialisation parameters - name: crypto_scheduler_pmd_1,socket id: 0, max queue pairs: 8
+cryptodev_scheduler_create() line 138:   Scheduling mode = round-robin
+cryptodev_scheduler_create() line 193:   Packet ordering = disable
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:7a:00.1_qat_sym
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:76:00.1_qat_sym
+Allocated pool "sess_mp_0" on socket 0
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,30000000,30000000,4439819,2154069,10.036,5.138,199.290
+10,128,32,30000000,30000000,5815694,3088249,10.043,10.284,199.138
+10,256,32,30000000,30000000,5689037,2745416,10.055,20.593,198.902
+10,512,32,30000000,30000000,5428644,1935684,10.021,41.047,199.575
+10,1024,32,30000000,30000000,5487508,1698426,9.896,81.065,202.111
+10,2048,32,30000000,30000000,5680729,644372,9.662,158.301,206.999
+
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app# ./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+> --vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 1,10,74 -n 6 \
+> -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+> --devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly --desc-nb=256
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:76:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_asym,socket id: 0, max queue pairs: 0
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:7a:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_asym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev crypto_scheduler_pmd_1
+CRYPTODEV: Initialisation parameters - name: crypto_scheduler_pmd_1,socket id: 0, max queue pairs: 8
+cryptodev_scheduler_create() line 138:   Scheduling mode = round-robin
+cryptodev_scheduler_create() line 193:   Packet ordering = disable
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:7a:00.1_qat_sym
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:76:00.1_qat_sym
+Allocated pool "sess_mp_0" on socket 0
+74,64,32,30000000,30000000,10281194,5418722,4.804,2.459,416.353
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,30000000,30000000,10244689,5389086,4.804,2.459,416.353
+10,128,32,30000000,30000000,10238411,5351799,4.802,4.917,416.493
+74,128,32,30000000,30000000,10264662,5372812,4.802,4.917,416.498
+74,256,32,30000000,30000000,10272819,5325979,4.800,9.831,416.634
+10,256,32,30000000,30000000,10226009,5287732,4.800,9.831,416.631
+10,512,32,30000000,30000000,10301568,5262832,4.767,19.524,419.589
+74,512,32,30000000,30000000,10377065,5325257,4.767,19.524,419.585
+10,1024,32,30000000,30000000,10564694,5407315,4.655,38.133,429.649
+74,1024,32,30000000,30000000,10626282,5458444,4.655,38.134,429.646
+74,2048,32,30000000,30000000,11417145,5941399,4.497,73.684,444.709
+10,2048,32,30000000,30000000,11357826,5889558,4.497,73.683,444.715
+
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app# ./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 --vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 1,10,74 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly --desc-nb=256
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:76:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_asym,socket id: 0, max queue pairs: 0
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:7a:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_asym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev crypto_scheduler_pmd_1
+CRYPTODEV: Initialisation parameters - name: crypto_scheduler_pmd_1,socket id: 0, max queue pairs: 8
+cryptodev_scheduler_create() line 138:   Scheduling mode = round-robin
+cryptodev_scheduler_create() line 193:   Packet ordering = disable
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:7a:00.1_qat_sym
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:76:00.1_qat_sym
+Allocated pool "sess_mp_0" on socket 0
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,30000000,30000000,10241846,5387135,4.804,2.460,416.332
+74,64,32,30000000,30000000,10321087,5455848,4.804,2.460,416.328
+10,128,32,30000000,30000000,10208162,5329748,4.803,4.918,416.390
+74,128,32,30000000,30000000,10280200,5391434,4.804,4.920,416.294
+74,256,32,30000000,30000000,10279925,5332136,4.800,9.830,416.680
+10,256,32,30000000,30000000,10189614,5254237,4.800,9.830,416.684
+74,512,32,30000000,30000000,10393637,5340542,4.768,19.528,419.500
+10,512,32,30000000,30000000,10315240,5276063,4.768,19.528,419.495
+74,1024,32,30000000,30000000,9901120,5099286,4.806,39.368,416.179
+10,1024,32,30000000,30000000,10671260,5836002,4.396,36.012,454.954
+10,2048,32,30000000,30000000,11397049,5922239,4.502,73.764,444.225
+74,2048,32,30000000,30000000,11453581,5968791,4.502,73.765,444.219
+
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app# ./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+> --vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 1,10,74,11,75 -n 6 \
+> -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+> --devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly --desc-nb=256
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:76:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:76:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:76:00.1_qat_asym,socket id: 0, max queue pairs: 0
+EAL: Probe PCI driver: qat (8086:4943) device: 0000:7a:00.1 (socket 0)
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_sym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_sym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev 0000:7a:00.1_qat_asym
+CRYPTODEV: Initialisation parameters - name: 0000:7a:00.1_qat_asym,socket id: 0, max queue pairs: 0
+CRYPTODEV: Creating cryptodev crypto_scheduler_pmd_1
+CRYPTODEV: Initialisation parameters - name: crypto_scheduler_pmd_1,socket id: 0, max queue pairs: 8
+cryptodev_scheduler_create() line 138:   Scheduling mode = round-robin
+cryptodev_scheduler_create() line 193:   Packet ordering = disable
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:7a:00.1_qat_sym
+scheduler_attach_init_worker() line 45: Scheduler crypto_scheduler_pmd_1 attached worker 0000:76:00.1_qat_sym
+Allocated pool "sess_mp_0" on socket 0
+75,64,32,30000000,30000000,26488933,15008742,2.536,1.298,788.661
+74,64,32,30000000,30000000,26278653,14827594,2.536,1.298,788.704
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,30000000,30000000,26436585,14965707,2.536,1.298,788.710
+11,64,32,30000000,30000000,26284960,15160853,2.469,1.264,810.207
+10,128,32,30000000,30000000,26914350,14844070,2.507,2.567,797.854
+74,128,32,30000000,30000000,26704963,14662140,2.507,2.567,797.863
+75,128,32,30000000,30000000,27069182,14973212,2.507,2.567,797.845
+11,128,32,30000000,30000000,27235959,15104100,2.507,2.567,797.844
+10,256,32,30000000,30000000,26649504,13696199,2.509,5.138,797.251
+74,256,32,30000000,30000000,26448062,13520465,2.509,5.138,797.259
+11,256,32,30000000,30000000,27031863,14006454,2.509,5.138,797.250
+75,256,32,30000000,30000000,26786006,13794198,2.509,5.138,797.247
+11,512,32,30000000,30000000,26938263,12345378,2.498,10.230,800.760
+74,512,32,30000000,30000000,26540895,12028120,2.498,10.230,800.779
+10,512,32,30000000,30000000,26680525,12145068,2.498,10.230,800.772
+75,512,32,30000000,30000000,26796113,12229703,2.498,10.230,800.758
+74,1024,32,30000000,30000000,26899380,10317499,2.463,20.176,812.063
+10,1024,32,30000000,30000000,27097764,10480672,2.463,20.176,812.052
+75,1024,32,30000000,30000000,27099354,10471457,2.463,20.176,812.046
+11,1024,32,30000000,30000000,27346727,10662903,2.463,20.176,812.042
+74,2048,32,30000000,30000000,27995197,8120077,2.371,38.839,843.679
+10,2048,32,30000000,30000000,28197113,8325265,2.371,38.839,843.680
+11,2048,32,30000000,30000000,28451581,8509440,2.371,38.840,843.668
+75,2048,32,30000000,30000000,28235159,8333408,2.371,38.840,843.668
+
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+root@dcpae-6438n:/opt/dpdk-qat/dpdk-stable-22.11.2/build/app#
+
+
+
+
+
+
+
+
