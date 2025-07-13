@@ -22,3 +22,10 @@ dpdk_cvl_readout - 20.02_20.05.pdf
 DPDK_ETHDEV_Foundation.pdf
 
 
+6_how_lanconf_zeroinit_dump_mac_register.pdf
+2021.12_Intel Platform Network Capability And Best Practice-Asiainfo.pptx
+602853_Intel Ethernet Network Controller Handbook_rev5_0.pdf
+ethernet cables and transceivers tech guide.pdf
+Ethernet solutions for Comms Sept 24.pdf
+Intel Ethernet 101 - Internal Only-791247-002.pptx
+Intel Ethernet Adapter One-Pagers Shipping and Pre-Production-UAM-824675.pptx
