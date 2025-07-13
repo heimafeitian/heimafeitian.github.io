@@ -37,4 +37,4 @@ create a series of rules on demand;
 set the default RSS profile;
 Advantage: Keep all original default profiles;
 Disadvantage: after that, add new rules still perhaps repro this issue;
-<img width="2421" height="709" alt="image" src="https://github.com/user-attachments/assets/242377ab-f235-4d8c-9aaf-5f058f6d8465" />
+
