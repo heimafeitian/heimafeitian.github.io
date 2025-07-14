@@ -1,0 +1,403 @@
+参数:
+small:80 million--> 80 transformation /s  
+large:300million--> 30 transformation/s
+对标寒武纪寒武纪单卡X8性能
+
+CV 模型: Computer Vision: image classification, object detection, and segmentation.
+计算机视觉（Computer Vision）模型
+定义：计算机视觉是一种人工智能技术，旨在使计算机能够像人类一样感知和理解视觉信息。它利用数字图像处理、模式识别、机器学习等方法从图像或视频中提取信息，
+如对象检测、识别、跟踪、姿态估计、三维重建等。1
+应用领域：医学影像分析、自动驾驶、安全监控、无人机航拍、人脸识别、游戏开发、虚拟现实和增强现实等。
+大型深度学习模型：在计算机视觉领域，大型深度学习模型，如卷积神经网络（CNN），被广泛应用于图像分类、目标检测、
+图像分割等任务。这些模型通过将输入图像转换为输出结果，如识别图像中的物体类别或位置，
+实现视觉任务的自动化处理。
+CV大模型的思路是将输入图像转换为输出结果，例如识别图像中的物体类别或位置等信息
+
+
+
+Yolov5
+
+目前，一些著名的CV大模型包括ResNet、Inception、VGG、EfficientNet、MobileNet等。这些模型都采用了不同的架构和优化技术，以提高其计算效率和精度。
+
+GPT-4V----LLaVA-1.5
+
+
+intel openvino  llava是否支持？？
+
+VIT
+Vision Transformer模型
+
+onnx模型 是否原始的模型转还是onnx模型
+
+eva-clip 使用eva02 模型
+
+EVA-02-CLIP
+
+
+https://blog.csdn.net/qq_39435411/article/details/132745592
+
+https://github.com/baaivision/EVA/tree/master/EVA-02/asuka
+
+
+Paper：
+        EVA01：EVA: Exploring the Limits of Masked Visual Representation Learning at Scale
+
+        EVA02：EVA-02: A Visual Representation for Neon Genesis
+
+
+huang.mengchao@zte.com.cn
+
+
+CNN-->Transformer
+
+
+
+对比式语言-图像预训练（CLIP模型）
+
+Vision Transformer
+
+
+viso
+
+Blip2
+
+qwen-vl
+
+llava-v1.5
+
+https://huggingface.co/docs/transformers/installation
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ pip install -r requirements.txt
+ 
+ pip install xformers
+
+
+
+(base) root@dcpae-6438n:~/wenjie# cat docker_ubuntu22_openvino.sh
+docker run --user root -it  --rm \
+        -e http_proxy=$http_proxy -e https_proxy=$https_proxy \
+        --cap-add SYS_ADMIN \
+        -v /root/wenjie:/root/wenjie \
+        openvino/ubuntu22_dev:latest  /bin/bash
+
+
+
+
+
+
+benchmark_app -m yolov5s/FP32/yolov5s.xml -d CPU -t 50 -b 1 -hint throughput -infer_precision CPU:bf16   
+benchmark_app -m yolov5s/FP32/yolov5s.xml -d CPU -t 50 -b 1 -hint throughput -infer_precision CPU:f32    
+
+
+
+
+
+benchmark_app -m resnet-50-pytorch/FP32/resnet-50-pytorch.xml -d CPU -t 10 -b 1 -hint throughput  -infer_precision CPU:bf16  
+benchmark_app -m resnet-50-pytorch/FP32/resnet-50-pytorch.xml -d CPU -t 10 -b 1 -hint throughput  -infer_precision CPU:f32  
+
+
+benchmark_app -m eva-02/eva-clip.xml -d CPU -t 50 -b 1 -hint throughput -infer_precision CPU:bf16
+
+
+
+benchmark_app -m /ai-models/Eva_CLIP_IR/eva02_B.xml -d CPU -niter 1 -b 1 -hint throughput -i /root/Test_File/dataset-group/ -infer_precision CPU:bf16 -inference_only False -ip f16
+
+
+benchmark_app -m /ai-models/Eva_CLIP_IR/eva02_B.xml -d CPU -t 50 -b 1 -hint throughput -infer_precision CPU:bf16
+
+
+
+root@14aef6c86e53:~/wenjie# benchmark_app -m eva-02/eva-clip.xml -d CPU -t 50 -b 1 -hint throughput -infer_precision CPU:bf16
+[Step 1/11] Parsing and validating input arguments
+[ INFO ] Parsing input parameters
+[Step 2/11] Loading OpenVINO Runtime
+[ INFO ] OpenVINO:
+[ INFO ] Build ................................. 2024.0.0-14509-34caeefd078-releases/2024/0
+[ INFO ]
+[ INFO ] Device info:
+[ INFO ] CPU
+[ INFO ] Build ................................. 2024.0.0-14509-34caeefd078-releases/2024/0
+[ INFO ]
+[ INFO ]
+[Step 3/11] Setting device configuration
+[ WARNING ] Batch size is set. Auto batching will be disabled
+[Step 4/11] Reading model files
+[ INFO ] Loading model files
+[ INFO ] Read model took 37.03 ms
+[ INFO ] Original model I/O parameters:
+[ INFO ] Model inputs:
+[ INFO ]     input (node: input) : f32 / [...] / [?,3,336,336]
+[ INFO ] Model outputs:
+[ INFO ]     ouput (node: ouput) : f32 / [...] / [?,9]
+[Step 5/11] Resizing model to match image sizes and given batch
+[ INFO ] Model batch size: 1
+[ INFO ] Reshaping model: 'input': [1,3,336,336]
+[ INFO ] Reshape model took 32.18 ms
+[Step 6/11] Configuring input of the model
+[ INFO ] Model inputs:
+[ INFO ]     input (node: input) : u8 / [N,C,H,W] / [1,3,336,336]
+[ INFO ] Model outputs:
+[ INFO ]     ouput (node: ouput) : f32 / [...] / [1,9]
+[Step 7/11] Loading the model to the device
+[ INFO ] Compile model took 731.82 ms
+[Step 8/11] Querying optimal runtime parameters
+[ INFO ] Model:
+[ INFO ]   NETWORK_NAME: main_graph
+[ INFO ]   OPTIMAL_NUMBER_OF_INFER_REQUESTS: 16
+[ INFO ]   NUM_STREAMS: 16
+[ INFO ]   AFFINITY: Affinity.CORE
+[ INFO ]   INFERENCE_NUM_THREADS: 64
+[ INFO ]   PERF_COUNT: NO
+[ INFO ]   INFERENCE_PRECISION_HINT: <Type: 'bfloat16'>
+[ INFO ]   PERFORMANCE_HINT: THROUGHPUT
+[ INFO ]   EXECUTION_MODE_HINT: ExecutionMode.PERFORMANCE
+[ INFO ]   PERFORMANCE_HINT_NUM_REQUESTS: 0
+[ INFO ]   ENABLE_CPU_PINNING: True
+[ INFO ]   SCHEDULING_CORE_TYPE: SchedulingCoreType.ANY_CORE
+[ INFO ]   ENABLE_HYPER_THREADING: False
+[ INFO ]   EXECUTION_DEVICES: ['CPU']
+[ INFO ]   CPU_DENORMALS_OPTIMIZATION: False
+[ INFO ]   LOG_LEVEL: Level.NO
+[ INFO ]   CPU_SPARSE_WEIGHTS_DECOMPRESSION_RATE: 1.0
+[ INFO ]   DYNAMIC_QUANTIZATION_GROUP_SIZE: 0
+[ INFO ]   KV_CACHE_PRECISION: <Type: 'float16'>
+[Step 9/11] Creating infer requests and preparing input tensors
+[ WARNING ] No input files were given for input 'input'!. This input will be filled with random values!
+[ INFO ] Fill input 'input' with random values
+[Step 10/11] Measuring performance (Start inference asynchronously, 16 inference requests, limits: 50000 ms duration)
+[ INFO ] Benchmarking in inference only mode (inputs filling are not included in measurement loop).
+[ INFO ] First inference took 88.84 ms
+[Step 11/11] Dumping statistics report
+[ INFO ] Execution Devices:['CPU']
+[ INFO ] Count:            6096 iterations
+[ INFO ] Duration:         50215.97 ms
+[ INFO ] Latency:
+[ INFO ]    Median:        130.40 ms
+[ INFO ]    Average:       131.57 ms
+[ INFO ]    Min:           120.41 ms
+[ INFO ]    Max:           167.14 ms
+[ INFO ] Throughput:   121.40 FPS
+
+
+
+root@177b7bc15e7b:/home/jack/models# benchmark_app -m eva-clip.xml -d CPU -t 50 -b 1 -hint throughput -infer_precision CPU:bf16
+[Step 1/11] Parsing and validating input arguments
+[ INFO ] Parsing input parameters
+[Step 2/11] Loading OpenVINO Runtime
+[ INFO ] OpenVINO:
+[ INFO ] Build ................................. 2024.6.0-17404-4c0f47d2335-releases/2024/6
+[ INFO ]
+[ INFO ] Device info:
+[ INFO ] CPU
+[ INFO ] Build ................................. 2024.6.0-17404-4c0f47d2335-releases/2024/6
+[ INFO ]
+[ INFO ]
+[Step 3/11] Setting device configuration
+[ WARNING ] Batch size is set. Auto batching will be disabled
+[Step 4/11] Reading model files
+[ INFO ] Loading model files
+[ INFO ] Read model took 81.88 ms
+[ INFO ] Original model I/O parameters:
+[ INFO ] Model inputs:
+[ INFO ]     input (node: input) : f32 / [...] / [?,3,336,336]
+[ INFO ] Model outputs:
+[ INFO ]     ouput (node: ouput) : f32 / [...] / [?,9]
+[Step 5/11] Resizing model to match image sizes and given batch
+[ INFO ] Model batch size: 1
+[ INFO ] Reshaping model: 'input': [1,3,336,336]
+[ INFO ] Reshape model took 19.01 ms
+[Step 6/11] Configuring input of the model
+[ INFO ] Model inputs:
+[ INFO ]     input (node: input) : u8 / [N,C,H,W] / [1,3,336,336]
+[ INFO ] Model outputs:
+[ INFO ]     ouput (node: ouput) : f32 / [...] / [1,9]
+[Step 7/11] Loading the model to the device
+[ INFO ] Compile model took 2563.47 ms
+[Step 8/11] Querying optimal runtime parameters
+[ INFO ] Model:
+[ INFO ]   NETWORK_NAME: main_graph
+[ INFO ]   OPTIMAL_NUMBER_OF_INFER_REQUESTS: 16
+[ INFO ]   NUM_STREAMS: 16
+[ INFO ]   INFERENCE_NUM_THREADS: 64
+[ INFO ]   PERF_COUNT: NO
+[ INFO ]   INFERENCE_PRECISION_HINT: <Type: 'bfloat16'>
+[ INFO ]   PERFORMANCE_HINT: THROUGHPUT
+[ INFO ]   EXECUTION_MODE_HINT: ExecutionMode.PERFORMANCE
+[ INFO ]   PERFORMANCE_HINT_NUM_REQUESTS: 0
+[ INFO ]   ENABLE_CPU_PINNING: True
+[ INFO ]   SCHEDULING_CORE_TYPE: SchedulingCoreType.ANY_CORE
+[ INFO ]   MODEL_DISTRIBUTION_POLICY: set()
+[ INFO ]   ENABLE_HYPER_THREADING: False
+[ INFO ]   EXECUTION_DEVICES: ['CPU']
+[ INFO ]   CPU_DENORMALS_OPTIMIZATION: False
+[ INFO ]   LOG_LEVEL: Level.NO
+[ INFO ]   CPU_SPARSE_WEIGHTS_DECOMPRESSION_RATE: 1.0
+[ INFO ]   DYNAMIC_QUANTIZATION_GROUP_SIZE: 32
+[ INFO ]   KV_CACHE_PRECISION: <Type: 'uint8_t'>
+[ INFO ]   AFFINITY: Affinity.CORE
+[Step 9/11] Creating infer requests and preparing input tensors
+[ WARNING ] No input files were given for input 'input'!. This input will be filled with random values!
+[ INFO ] Fill input 'input' with random values
+[Step 10/11] Measuring performance (Start inference asynchronously, 16 inference requests, limits: 50000 ms duration)
+[ INFO ] Benchmarking in inference only mode (inputs filling are not included in measurement loop).
+[ INFO ] First inference took 164.19 ms
+[Step 11/11] Dumping statistics report
+[ INFO ] Execution Devices:['CPU']
+[ INFO ] Count:            7792 iterations
+[ INFO ] Duration:         50102.56 ms
+[ INFO ] Latency:
+[ INFO ]    Median:        103.09 ms
+[ INFO ]    Average:       102.67 ms
+[ INFO ]    Min:           83.17 ms
+[ INFO ]    Max:           239.04 ms
+[ INFO ] Throughput:   155.52 FPS
+
+
+
+
+
+performance
+	https://www.edge-ai-vision.com/2020/03/maximize-cpu-inference-performance-with-improved-threads-and-memory-management-in-intel-distribution-of-openvino-toolkit/
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Install Notebook;
+
+https://github.com/openvinotoolkit/openvino_notebooks/wiki/Ubuntu
+
+source openvino_env/bin/activate
+
+cd /root/openvino_notebooks
+
++++++++++++++
+jupyter lab notebooks --ip=0.0.0.0 --allow-root
+
+
+
+
+http://10.239.173.32:8888/lab?token=6f5c8b0bd9f2b7bf825037139d6cba466c3a7c0559a17b13
+
+http://10.239.173.32:8888/lab?token=d7f90b44b9089a1936526430d00b589b6d1ebe8953ec11d0
+
+
+http://10.239.173.32:8888/lab?token=a2f5dccde0acf374588a78d08f8b54926f2946abcbed4bad
+
+
+
+
+
+Install Openvino runtime
+
+https://docs.openvino.ai/2024/get-started/install-openvino.html?VERSION=v_2024_0_0&OP_SYSTEM=LINUX&DISTRIBUTION=PIP
+
+
+
+
+
+
+
+Ubuntu 22.04 上安装 Miniconda
+
+###############
+
+wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+chmod +x Miniconda3-latest-Linux-x86_64.sh
+
+./Miniconda3-latest-Linux-x86_64.sh
+
+conda --version
+
+
+
+If you'd prefer that conda's base environment not be activated on startup,
+   run the following command when conda is activated:
+
+conda config --set auto_activate_base false
+
+You can undo this by running `conda init --reverse $SHELL`? [yes|no]
+[no] >>> no
+
+You have chosen to not have conda modify your shell scripts at all.
+To activate conda's base environment in your current shell session:
+
+eval "$(/root/miniconda3/bin/conda shell.YOUR_SHELL_NAME hook)"
+
+To install conda's shell functions for easier access, first activate, then:
+
+conda init
+
+Thank you for installing Miniconda3!
+
+
+
+https://gitee.com/ppov-nuc/yolov5_infer/blob/main/yolov5_async_infer_queue.py
+
+
+我参考了你们的接口自己用异步队列实现了一个脚本，结果没你们的benchmark效果好[破涕为笑]. 因为我当时想测准确率嘛，所以您看看你们那能否帮忙修改一下，
+就是benchmark里加入准确率的评估. 如果准确率测下来有下降的话，应该要调整图像预处理部分
+
+
+另外能否帮忙找你们支持的人看看图像预处理部分，需不需要改成eva模型里的方式？
+def build_transform(is_train, args):
+    resize_im = args.input_size > 32
+    imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
+    mean = (0.48145466, 0.4578275, 0.40821073) if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
+    std = (0.26862954, 0.26130258, 0.27577711) if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
+
+    if is_train:
+        if args.linear_probe:
+            return transforms.Compose([
+                RandomResizedCrop(args.input_size, interpolation=3),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=mean, std=std)],
+            )
+        # this should always dispatch to transforms_imagenet_train
+        transform = create_transform(
+            no_aug=args.no_aug,
+            input_size=args.input_size,
+            is_training=True,
+            color_jitter=args.color_jitter,
+            auto_augment=args.aa,
+            interpolation=args.train_interpolation,
+            re_prob=args.reprob,
+            re_mode=args.remode,
+            re_count=args.recount,
+            mean=mean,
+            std=std,
+            scale=args.scale
+        )
+        if not resize_im:
+            # replace RandomResizedCropAndInterpolation with
+            # RandomCrop
+            transform.transforms[0] = transforms.RandomCrop(
+                args.input_size, padding=4)
+        return transform
+
+    t = []
+    if resize_im:
+        if args.crop_pct is None:
+            if args.input_size < 384:
+                args.crop_pct = 224 / 256
+            else:
+                args.crop_pct = 1.0
+        size = int(args.input_size / args.crop_pct)
+        t.append(
+            transforms.Resize(size, interpolation=3),  # to maintain same ratio w.r.t. 224 images
+        )
+        t.append(transforms.CenterCrop(args.input_size))
+
+    t.append(transforms.ToTensor())
+    t.append(transforms.Normalize(mean, std))
+    return transforms.Compose(t)
+	
+	
+	
+	
