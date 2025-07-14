@@ -55,6 +55,27 @@ qadcapiv213public .pdf
 
 709193_qat_quick_start_guide_007.pdf
 
+00 Nginx
+01 Linux upstream
+02 Openssl
+03 QAT Engine
+04 QATZip
+05 TLS
+06 IPSEC
+07 CDN
+08 KPT
+09 ZSTD
+10 QATlib
+11 QUIC
+12 PQC
+BigData
+brotli
+Compression
+Haproxy
+SMx
+Storage
+
+
 02 DLB  
 03 DSA  
 04 IAA  
