@@ -24,7 +24,8 @@ i360_23-Enabling Your Customers to Build-and Deploy-AI-Everywhere.pdf
 Intel AMX Technology Brief.pdf
 
 
-01 QAT  
+01 QAT /
+
 00 Quick StartGuide
 01 QAT Document
 01 QAT Technology and Roadmap
@@ -36,7 +37,21 @@ Intel AMX Technology Brief.pdf
 06 QAT WhitePaper
 07 PRC QAT IRF
 08 Crypto NI
-
+330684-011-intel-qat-api-programmers-guide.pdf
+330687qatperformanceoptimizationguiderev007us.pdf
+330689 IntelQAT Virtualization AppNote Rev015.pdf
+336210_Intel QAT -- CE PG_rev030.pdf
+336211_Intel QAT -- CE RN_rev036.pdf
+336211_QAT_Software_for_Linux-Customer_Enabling_Release_Notes-rev033_rc00005.pdf
+336212_Intel QAT- GSG_rev015.pdf
+337003-001-intelquickassisttechnologyandopenssl-110.pdf
+337002-003-qatwcontaineranddocker.pdf
+549027-1.0-Intel QuickAssist_MOW-2024-WW01.pdf
+571081-571081-enabling-kpt-in-nginx-openssl-rev-02.pdf
+613626--1.4.0-intel--qat-programmers-guide-v1.8.pdf
+621658--1--4--qat-debugging-guide.pd
+Intel® QuickAssist Technology Cryptographic .pdf
+qadcapiv213public .pdf
 
 02 DLB  
 03 DSA  
