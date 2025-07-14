@@ -23,3 +23,9 @@ https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/0035-201901
 Intel® QuickAssist Technology Support in Kubernetes 
 https://github.com/intel/intel-device-plugins-for-kubernetes/tree/master/cmd/qat_plugin
 
+Reference_System_Architectures_Portfolio_2nd3rd4thGenIntelXeonSP_XeonD_UserManual_709922v1.pdf
+
+
+cpu-pin-and-isolation-in-kubernetes-app-note.pdf
+
+
