@@ -1,0 +1,126 @@
+Beta repo link
+：https://github.com/heimafeitian/CommsPowerManagement/tree/master/upm/docker/ubuntu20.04/upm-agent
+
+https://github.com/intel-innersource/networking.dataplane.dpdk.tools.comms-power-management/tree/master/upm
+
+latest:
+https://github.com/intel-innersource/networking.dataplane.upm.collateral/tree/main/k8s
+
+
+Base on beta version
+https://github.com/intel-innersource/networking.dataplane.upm.upm-agent/releases/tag/beta
+
+
+
+
+
+First run L3fwdDPDK
+
+Compiled, patched version of dpdk l3fwd, optionally automake The patches needed for DPDK can be found in the relevant version directory under /upm/patches/dpdk, which provides the relevant telemetry out of the DPDK application for UPM to function.
+
+In Makefile set correct path to dpdk folder (dpdk_source_dir) and needed tools (dpdk_tool). Selected file(s) from this path will be copied to image. Its possibile to chose whole folder instead of file, it will be copied with all subdirectories.
+
+In Makefile set correct path to dpdk folder (dpdk_source_dir) and needed tools (dpdk_tool). Selected file(s) from this path will be copied to image. Its possibile to chose whole folder instead of file, it will be copied with all subdirectories.
+In start-tools.sh set correct NIC's adresses and telemetry prefix
+Run make to build the docker image
+Run make push should you wish to push the docker image to the local registry so it can be later used in a k8s pod.
+
+#make
+#make push
+
+rerequsities
+dpdk-l3fwd docker image pushed to docker registry
+If it doesn't already exits, create the upm-agent namespace
+# kubectl create namespace upm-agent
+namespace/upm-agent created
+Creating the dpdk-l3fwd pod
+Edit l3fwd-configmap.yaml and configure as required.
+create the configmap
+# kubectl apply -f l3fwd-configmap.yaml
+configmap/l3fwd created
+Edit l3fwd-pod.yaml and ensure image is pointing at the approprite registry location.
+create and run the pod
+# kubectl apply -f l3fwd-pod.yaml
+pod/l3fwd created
+verify the pod is running
+# kubectl get pods -n upm-agent
+NAME        READY   STATUS    RESTARTS      AGE
+l3fwd       1/1     Running   0             53s
+
+
+
+
+
+kubectl logs l3fwd -n upm-agent
+
+kubectl logs upm-agent -n upm-agent
+
+
+kubectl describe pods l3fwd  -n upm-agent
+
+kubectl exec -it l3fwd  --container l3fwd-ubuntu -n upm-agent   -- /bin/bash
+
+
+
+
+
+
+
+1、UPM Agent Docker image
+Prerequsities
+Compiled agent file (upm-agent) and configuration (config.json) suitable for your system.
+automake (optional)
+docker installed and running
+a local docker repository (e.g. sudo docker run -d -p 32000:32000 --name my-registry registry:2)
+#docker run -d -p 5000:5000 --name my-registry registry:2
+
+Creating Docker Image
+Make the docker image.
+
+change the source_dir variable to point to the directiry where the upm-agent binary is located.
+change the 'registry' to point to the local docker registry hostname and port number.
+run make which will run docker build to make the docker image.
+run make push which will push the docker image to the local repository to make the image available for use by k8s or helm.
+#make
+#make push
+
+
+2、Running the Docker Image（docker 方式运行）
+
+3、k8s podspecs
+UPM Agent Pod Specifications
+
+Prerequsities
+upm-agent docker image pushed to docker registry
+If it doesn't already exits, create the upm-agent namespace
+3.1 create namespace
+# kubectl create namespace upm-agent
+namespace/upm-agent created
+
+kubectl get namespace
+
+Creating the upm-agent pod
+Edit configmap.yaml and configure as required.
+3.2 create the configmap
+# kubectl apply -f configmap.yaml
+configmap/upm-agent created
+Edit upm-agent-pod.yaml and ensure image is pointing at the approprite registry location.
+
+ kubectl get configmaps -n upm-agent
+ 
+3.3 create and run the pod
+# kubectl apply -f upm-agent-pod.yaml
+pod/upm-agent created
+verify the pod is running
+# kubectl get pods -n upm-agent
+NAME        READY   STATUS    RESTARTS      AGE
+upm-agent   1/1     Running   1 (44s ago)   105s
+
+
+kubectl describe pods upm-agent  -n upm-agent
+
+kubectl logs  upm-agent upm-agent-ubuntu -n upm-agent
+
+kubectl exec -it upm-agent  --container upm-agent-ubuntu -n upm-agent   -- /bin/bash
+
+
