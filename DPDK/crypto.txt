@@ -1,0 +1,798 @@
+openssl pmd performance(1C1T):
+The SW PMD performance is linear scaling out with core numbers.
+
+Cryptodev SW-openssl performance for (AES-CBC128/SHA1-HMAC)：
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_openssl -l 1,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_openssl --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,10000000,10000000,0,0,1.006,0.515,1989.034
+10,128,32,10000000,10000000,0,0,0.912,0.934,2193.504
+10,256,32,10000000,10000000,0,0,0.759,1.554,2636.162
+10,512,32,10000000,10000000,0,0,0.549,2.250,3641.482
+10,1024,32,10000000,10000000,0,0,0.354,2.904,5642.714
+10,2048,32,10000000,10000000,0,0,0.208,3.400,9638.476
+
+
+Cryptodev SW-openssl performance for (AES-CBC-128/SHA2-256-HMAC)
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_openssl -l 1,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_openssl --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --silent --digest-sz 16 \
+--auth-algo sha2-256-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,10000000,10000000,0,0,1.016,0.520,1967.889
+10,128,32,10000000,10000000,0,0,0.913,0.935,2189.581
+10,256,32,10000000,10000000,0,0,0.748,1.531,2674.557
+10,512,32,10000000,10000000,0,0,0.536,2.196,3731.120
+10,1024,32,10000000,10000000,0,0,0.342,2.804,5843.763
+10,2048,32,10000000,10000000,0,0,0.199,3.255,10066.698
+
+
+Cryptodev SW-openssl performance for (AES-GCM-128)
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_openssl -l 9,10 -n 6 \
+-- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+--devtype crypto_openssl --aead-op encrypt --burst-sz 32 --total-ops 10000000 --silent --digest-sz 16 \
+--aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly
+
+
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,10000000,10000000,0,0,5.709,2.923,350.312
+10,128,32,10000000,10000000,0,0,4.864,4.981,411.155
+10,256,32,10000000,10000000,0,0,4.337,8.883,461.097
+10,512,32,10000000,10000000,0,0,3.360,13.762,595.269
+10,1024,32,10000000,10000000,0,0,2.337,19.143,855.857
+10,2048,32,10000000,10000000,0,0,1.425,23.354,1403.088
+
+
+
+----------------------------------------------------------------------
+
+AESNI-MB PMD performance(1C1T)：
+Cryptodev SW performance for (AES-CBC128/SHA1-HMAC)
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 1,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,10000000,10000000,0,0,6.143,3.145,325.589
+10,128,32,10000000,10000000,0,0,5.360,5.489,373.115
+10,256,32,10000000,10000000,0,0,4.386,8.982,456.029
+10,512,32,10000000,10000000,0,0,3.158,12.934,633.360
+10,1024,32,10000000,10000000,0,0,2.085,17.079,959.319
+10,2048,32,10000000,10000000,0,0,1.220,19.988,1639.377
+
+
+Cryptodev SW performance for ((AES-CBC-128/SHA2-256-HMAC))
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 16 \
+--auth-algo sha2-256-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,10000000,10000000,0,0,4.672,2.392,428.042
+10,128,32,10000000,10000000,0,0,3.940,4.035,507.612
+10,256,32,10000000,10000000,0,0,3.091,6.330,647.102
+10,512,32,10000000,10000000,0,0,2.117,8.669,944.936
+10,1024,32,10000000,10000000,0,0,1.364,11.170,1466.763
+10,2048,32,10000000,10000000,0,0,0.775,12.705,2579.208
+
+
+Cryptodev performance for (AES-GCM-128)
+支持 性能不如 AES-GCM——PMD
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 1,10 -n 6 \
+-- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+--devtype crypto_aesni_mb --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 \
+--aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly
+
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,10000000,10000000,0,0,12.477,6.388,160.291
+10,128,32,10000000,10000000,0,0,11.896,12.182,168.121
+10,256,32,10000000,10000000,0,0,9.342,19.132,214.097
+10,512,32,10000000,10000000,0,0,8.145,33.362,245.552
+10,1024,32,10000000,10000000,0,0,5.897,48.312,339.132
+10,2048,32,10000000,10000000,0,0,3.849,63.059,519.639
+
+
+
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_gcm_pmd_1 -l 1,10 -n 6 \
+-- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+--devtype crypto_aesni_gcm --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 \
+--aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly
+
+
+
+#lcore id,Buffer Size(B),Burst Size,Enqueued,Dequeued,Failed Enq,Failed Deq,Ops(Millions),Throughput(Gbps),Cycles/Buf
+
+10,64,32,10000000,10000000,0,0,15.838,8.109,126.276
+10,128,32,10000000,10000000,0,0,15.163,15.527,131.902
+10,256,32,10000000,10000000,0,0,11.966,24.506,167.141
+10,512,32,10000000,10000000,0,0,9.797,40.131,204.134
+10,1024,32,10000000,10000000,0,0,6.926,56.740,288.756
+10,2048,32,10000000,10000000,0,0,4.163,68.198,480.480
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+Test Case 1 – Cryptodev SW
+
+Cryptodev performance for (AES-CBC128/SHA1-HMAC)
+
+AESNI_MB PMD command line:
+1C1T：
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 1,10 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+1C2T
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 1,10,74 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+2C4T
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 1,10,74,11,75 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+4C8T
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 1,10,74,11,75,12,76,13,77 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+
+
+Cryptodev performance for ((AES-CBC-128/SHA2-256-HMAC)
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10 -n 6 -- --buffer-sz \
+64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput -- \
+auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz \
+16 --auth-op generate --burst-sz 32 --total-ops 10000000 --silent -- \
+digest-sz 16 --auth-algo sha2-256-hmac --cipher-algo aes-cbc --cipher-op \
+Encrypt --csv-friendly
+
+Cryptodev performance for (AES-GCM-128)
+
+支持 性能不如 AES-GCM——PMD
+####./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_aesni_mb --aead-op encrypt --burst-sz 32 --total-ops 10000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12
+
+
+AESNI_MB PMD command line:
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_gcm_pmd_1 -l 1,10 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_aesni_gcm --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_gcm_pmd_1 -l 1,10,74 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_aesni_gcm --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly 
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_gcm_pmd_1 -l 1,10,74,11,75 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_aesni_gcm --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly 
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_gcm_pmd_1 -l 1,10 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_aesni_gcm --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly 
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_gcm_pmd_1 -l 1,10,74,11,75,12,76,13,77 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_aesni_gcm --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly 
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+echo 4 > /sys/bus/pci/drivers/4xxx/0000:76:00.0/sriov_numvfs
+
+
+./dpdk-devbind.py -b vfio-pci 0000:76:00.1 0000:7a:00.1 
+
+
+
+cd /app/test
+./dpdk-test -l1 -n1 -a 0000:76:00.1
+RTE>>cryptodev_qat_autotest
+
+
+
+QAT SYM crypto PMD can be tested by running the test application:
+
+cd ./<build_dir>/app/test
+./dpdk-test -l1 -n1 -a <your qat bdf>
+RTE>>cryptodev_qat_autotest
+QAT ASYM crypto PMD can be tested by running the test application:
+
+cd ./<build_dir>/app/test
+./dpdk-test -l1 -n1 -a <your qat bdf>
+RTE>>cryptodev_qat_asym_autotest
+QAT compression PMD can be tested by running the test application:
+
+cd ./<build_dir>/app/test
+./dpdk-test -l1 -n1 -a <your qat bdf>
+RTE>>compressdev_autotest
+
+
+------------------------------------------------------------------------------------------------------------------------------
+devtype:devtype crypto_scheduler:
+one device
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,mode=round-robin -l 9,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput \
+--auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_scheduler --cipher-iv-sz 16 --auth-op generate --burst-sz 32 \
+--total-ops 30000000 --silent --digest-sz 20 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly 
+
+
+
+two device 
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 9,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput \
+--auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_scheduler --cipher-iv-sz 16 --auth-op generate --burst-sz 32 \
+--total-ops 30000000 --silent --digest-sz 20 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly 
+
+
+two device 2 core
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 9,10,11 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput \
+--auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_scheduler --cipher-iv-sz 16 --auth-op generate --burst-sz 32 \
+--total-ops 30000000 --silent --digest-sz 20 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt
+
+#########
+Number of needed queue pairs is higher than the maximum number of queue pairs per device.
+Lower the number of cores or increase the number of crypto devices
+
+
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 9,10,11,12 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput \
+--auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_scheduler --cipher-iv-sz 16 --auth-op generate --burst-sz 32 \
+--total-ops 30000000 --silent --digest-sz 20 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt
+
+
+
+
+aes-cbc-sha1
+ 
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 9,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_scheduler --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 30000000 --silent --digest-sz 20 \
+--auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly 
+ 
+ 
+ 
+aes-cbc-sha2
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,mode=round-robin -l 9,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_scheduler --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 30000000 --silent --digest-sz 32 \
+--auth-algo sha2-256-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly 
+
+ 
+AES-GCM-128
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,mode=round-robin -l 9,10 -n 6 \
+-- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+--devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly 
+
+
+
+2VF 1C/1T
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 1,10 -n 6 \
+-- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+--devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly --desc-nb=256
+
+
+
+
+
+2VF 1C/2T
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 1,10,74 -n 6 \
+-- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+--devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly --desc-nb=256
+
+
+2VF 1C/4T
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+--vdev crypto_scheduler_pmd_1,worker=0000:76:00.1_qat_sym,worker=0000:7a:00.1_qat_sym,mode=round-robin -l 1,10,74,11,75 -n 6 \
+-- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 \
+--devtype crypto_scheduler --aead-op encrypt --burst-sz 32 --total-ops 30000000 --silent --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12 --csv-friendly --desc-nb=256
+
+
+
+
+1c/1T重启后一把就是
+80G
+多次跑的话；
+不到80G
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+devtype:devtype qat
+
+
+one device
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1  \
+-l 1,10 -n 4 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput \
+--auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_qat --cipher-iv-sz 16 --auth-op generate --burst-sz 32 \
+--total-ops 30000000 --silent --digest-sz 20 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly 
+
+another one
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem  -a 0000:7a:00.1 \
+-l 1,74 -n 4 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput \
+--auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_qat --cipher-iv-sz 16 --auth-op generate --burst-sz 32 \
+--total-ops 30000000 --silent --digest-sz 20 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly 
+
+
+two device
+
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem -a 0000:76:00.1 -a 0000:7a:00.1 \
+-l 1,10,74 -n 4 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput \
+--auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_qat --cipher-iv-sz 16 --auth-op generate --burst-sz 32 \
+--total-ops 30000000 --silent --digest-sz 20 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt --csv-friendly 
+
+
+Intel® Multi-Buffer crypto for IPSec Commands Performance
+
+
+
+
+
+ZUC-256
+~/intel-ipsec-mb/perf/ipsec_perf --cipher-algo zuc-eea3-256 --hash-algo zuc-eia3-256
+SNOW-V
+~/intel-ipsec-mb/perf/ipsec_perf --aead-algo snow-v-aead
+
+
+
+
+
+openssl dev performance
+
+1C1T
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_openssl -l 1,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_openssl --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+
+1C2T
+
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_openssl -l 1,10,74 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_openssl --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+2C4T:
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_openssl -l 1,10,74,11,75 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_openssl --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+
+4C8T:
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_openssl -l 1,10,74,11,75,12,76,13,77 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 \
+--devtype crypto_openssl --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo aes-cbc --cipher-op encrypt --csv-friendly
+
+
+
+
+
+
+
+
+
+
+
+
+root@ipmtest:/home/jack/dpdk-stable-22.11.2/build/app# ./dpdk-test-crypto-perf -l 9,10,11,12 -n 4 --vdev crypto_openssl -- --devtype crypto_openssl --aead-algo aes-gcm --aead-key-sz 16 --aead-iv-sz 12 --aead-op encrypt --aead-aad-sz 16 --digest-sz 16 --optype aead --silent --ptest throughput --burst-sz 32 --buffer-sz 64 --total-ops 1000 
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'PA'
+EAL: 4096 hugepages of size 2097152 reserved, but no mounted hugetlbfs found for that size
+EAL: VFIO support initialized
+CRYPTODEV: Creating cryptodev crypto_openssl
+CRYPTODEV: Initialisation parameters - name: crypto_openssl,socket id: 0, max queue pairs: 8
+TELEMETRY: No legacy callbacks, legacy socket not created
+Allocated pool "sess_mp_0" on socket 0
+    lcore id    Buf Size  Burst Size    Enqueued    Dequeued  Failed Enq  Failed Deq        MOps        Gbps  Cycles/Buf
+
+          10          32          32          10          10           0           0      0.8594      0.2200     2327.20
+          11          32          32          10          10           0           0      0.9919      0.2539     2016.40
+          12          32          32          10          10           0           0      1.1204      0.2868     1785.00
+
+root@ipmtest:/home/jack/dpdk-stable-22.11.2/build/app# ./dpdk-test-crypto-perf -l 9,10,11,12 -n 4 --vdev crypto_openssl -- --devtype crypto_openssl --aead-algo aes-gcm --aead-key-sz 16 --aead-iv-sz 12 --aead-op encrypt --aead-aad-sz 16 --digest-sz 16 --optype aead --silent --ptest throughput --burst-sz 32 --buffer-sz 128 --total-ops 10 --test-name aead_buff_64 --test-file test_aes_gcm.data
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'PA'
+EAL: 4096 hugepages of size 2097152 reserved, but no mounted hugetlbfs found for that size
+EAL: VFIO support initialized
+CRYPTODEV: Creating cryptodev crypto_openssl
+CRYPTODEV: Initialisation parameters - name: crypto_openssl,socket id: 0, max queue pairs: 8
+TELEMETRY: No legacy callbacks, legacy socket not created
+Allocated pool "sess_mp_0" on socket 0
+    lcore id    Buf Size  Burst Size    Enqueued    Dequeued  Failed Enq  Failed Deq        MOps        Gbps  Cycles/Buf
+
+          10         128          32          10          10           0           0      0.8306      0.8506     2407.80
+          11         128          32          10          10           0           0      1.0683      1.0939     1872.20
+          12         128          32          10          10           0           0      1.1334      1.1606     1764.60
+
+root@ipmtest:/home/jack/dpdk-stable-22.11.2/build/app#
+
+
+
+
+./dpdk-l2fwd-crypto -l 1 -n 4 --vdev="crypto_aesni_mb,socket_id=0,max_nb_sessions=128" -- -p 1 --cdev SW --chain CIPHER_HASH --cipher_algo "aes-cbc" --auth_algo "sha1-hmac"
+
+
+./dpdk-test-crypto-perf -l 1,2,34 --vdev crypto_aesni_mb_pmd -a 0000:00:00.0 -- --ptest throughput --devtype crypto_aesni_mb --optype auth-only --auth-algo aes-cmac --auth-op generate --auth-key-sz 16 --digest-sz 4 --total-ops 10000000 --burst-sz 32 --buffer-sz 16:16:2048 --silent --csv-friendly
+
+
+
+
+
+
+Test Case 2 – Cryptodev SW
+Cryptodev performance for (AES-CBC128/SHA1-HMAC)
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10,74 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10,74,11,75 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt
+
+
+
+
+root@ipmtest:/home/jack/dpdk-stable-22.11.2/build_MB/app# ./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac --cipher-algo aes-cbc --cipher-op encrypt
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+CRYPTODEV: Creating cryptodev crypto_aesni_mb_pmd_1
+CRYPTODEV: Initialisation parameters - name: crypto_aesni_mb_pmd_1,socket id: 0, max queue pairs: 8
+ipsec_mb_create() line 168: IPSec Multi-buffer library version used: 1.3.0
+
+TELEMETRY: No legacy callbacks, legacy socket not created
+Allocated pool "sess_mp_0" on socket 0
+# Crypto Performance Application Options:
+#
+# cperf test: throughput
+#
+# size of crypto op / mbuf pool: 8192
+# total number of ops: 10000000
+# buffer sizes: 64 128 256 512 1024 2048
+# burst sizes: 32
+
+# segment size: 2060
+#
+# cryptodev type: crypto_aesni_mb
+#
+# number of queue pairs per device: 1
+# crypto operation: cipher-then-auth
+# sessionless: no
+# out of place: no
+#
+# auth algorithm: sha1-hmac
+# auth operation: generate
+# auth key size: 64
+# auth iv size: 0
+# auth digest size: 12
+#
+# cipher algorithm: aes-cbc
+# cipher operation: encrypt
+# cipher key size: 16
+# cipher iv size: 16
+#
+    lcore id    Buf Size  Burst Size    Enqueued    Dequeued  Failed Enq  Failed Deq        MOps        Gbps  Cycles/Buf
+
+          10          64          32    10000000    10000000           0           0      6.0704      3.1080      329.47
+          10         128          32    10000000    10000000           0           0      5.2776      5.4043      378.96
+          10         256          32    10000000    10000000           0           0      4.2866      8.7789      466.57
+          10         512          32    10000000    10000000           0           0      3.0963     12.6824      645.93
+          10        1024          32    10000000    10000000           0           0      2.0529     16.8177      974.21
+          10        2048          32    10000000    10000000           0           0      1.2108     19.8385     1651.74
+
+
+
+
+Cryptodev performance for (AES-CBC128/SHA2-256-HMAC)
+
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --silent -- digest-sz 16 --auth-algo sha2-256-hmac --cipher-algo aes-cbc --cipher-op encrypt
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha2-256-hmac --cipher-algo aes-cbc --cipher-op encrypt
+
+
+
+root@ipmtest:/home/jack/dpdk-stable-22.11.2/build_MB/app# ./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 9,10 -n 6 -- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 16 --devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha2-256-hmac --cipher-algo aes-cbc --cipher-op encrypt
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+CRYPTODEV: Creating cryptodev crypto_aesni_mb_pmd_1
+CRYPTODEV: Initialisation parameters - name: crypto_aesni_mb_pmd_1,socket id: 0, max queue pairs: 8
+ipsec_mb_create() line 168: IPSec Multi-buffer library version used: 1.3.0
+
+TELEMETRY: No legacy callbacks, legacy socket not created
+Allocated pool "sess_mp_0" on socket 0
+# Crypto Performance Application Options:
+#
+# cperf test: throughput
+#
+# size of crypto op / mbuf pool: 8192
+# total number of ops: 10000000
+# buffer sizes: 64 128 256 512 1024 2048
+# burst sizes: 32
+
+# segment size: 2060
+#
+# cryptodev type: crypto_aesni_mb
+#
+# number of queue pairs per device: 1
+# crypto operation: cipher-then-auth
+# sessionless: no
+# out of place: no
+#
+# auth algorithm: sha2-256-hmac
+# auth operation: generate
+# auth key size: 64
+# auth iv size: 0
+# auth digest size: 12
+#
+# cipher algorithm: aes-cbc
+# cipher operation: encrypt
+# cipher key size: 16
+# cipher iv size: 16
+#
+    lcore id    Buf Size  Burst Size    Enqueued    Dequeued  Failed Enq  Failed Deq        MOps        Gbps  Cycles/Buf
+
+          10          64          32    10000000    10000000           0           0      4.6200      2.3654      432.90
+          10         128          32    10000000    10000000           0           0      3.9123      4.0062      511.21
+          10         256          32    10000000    10000000           0           0      3.0587      6.2643      653.87
+          10         512          32    10000000    10000000           0           0      2.0966      8.5876      953.94
+          10        1024          32    10000000    10000000           0           0      1.3508     11.0658     1480.59
+          10        2048          32    10000000    10000000           0           0      0.7722     12.6525     2589.84
+
+Cryptodev performance for (AES-GCM-128)
+./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_gcm_pmd_1 -l 9,10 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_aesni_gcm --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12
+
+root@ipmtest:/home/jack/dpdk-stable-22.11.2/build_MB/app# ./dpdk-test-crypto-perf --socket-mem 2048,0 --legacy-mem --vdev crypto_aesni_gcm_pmd_1 -l 9,10 -n 6 -- --aead-key-sz 16 --buffer-sz 64,128,256,512,1024,2048 --optype aead --ptest throughput --aead-aad-sz 16 --devtype crypto_aesni_gcm --aead-op encrypt --burst-sz 32 --total-ops 10000000 --digest-sz 16 --aead-algo aes-gcm --aead-iv-sz 12
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+CRYPTODEV: Creating cryptodev crypto_aesni_gcm_pmd_1
+CRYPTODEV: Initialisation parameters - name: crypto_aesni_gcm_pmd_1,socket id: 0, max queue pairs: 8
+ipsec_mb_create() line 168: IPSec Multi-buffer library version used: 1.3.0
+
+TELEMETRY: No legacy callbacks, legacy socket not created
+Allocated pool "sess_mp_0" on socket 0
+# Crypto Performance Application Options:
+#
+# cperf test: throughput
+#
+# size of crypto op / mbuf pool: 8192
+# total number of ops: 10000000
+# buffer sizes: 64 128 256 512 1024 2048
+# burst sizes: 32
+
+# segment size: 2064
+#
+# cryptodev type: crypto_aesni_gcm
+#
+# number of queue pairs per device: 1
+# crypto operation: aead
+# sessionless: no
+# out of place: no
+#
+# aead algorithm: aes-gcm
+# aead operation: encrypt
+# aead key size: 16
+# aead iv size: 12
+# aead digest size: 16
+# aead aad size: 16
+#
+    lcore id    Buf Size  Burst Size    Enqueued    Dequeued  Failed Enq  Failed Deq        MOps        Gbps  Cycles/Buf
+
+          10          64          32    10000000    10000000           0           0     15.8612      8.1209      126.09
+          10         128          32    10000000    10000000           0           0     15.0799     15.4418      132.63
+          10         256          32    10000000    10000000           0           0     11.9572     24.4883      167.26
+          10         512          32    10000000    10000000           0           0      9.6999     39.7307      206.19
+          10        1024          32    10000000    10000000           0           0      6.9602     57.0180      287.35
+          10        2048          32    10000000    10000000           0           0      4.1790     68.4689      478.58
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+AES-CBC / 3DES-CBC
+
+
+./dpdk-test-crypto-perf --socket-mem 1024,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 1,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 24 \
+--devtype crypto_aesni_mb --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo aes-cbc --cipher-op encrypt
+
+
+./dpdk-test-crypto-perf --socket-mem 1024,0 --legacy-mem --vdev crypto_openssl -l 1,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 64 --cipher-key-sz 24 \
+--devtype crypto_openssl --cipher-iv-sz 16 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo aes-cbc --cipher-op encrypt
+
+
+
+./dpdk-test-crypto-perf --socket-mem 1024,0 --legacy-mem --vdev crypto_aesni_mb_pmd_1 -l 1,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 16 --cipher-key-sz 24 \
+--devtype crypto_aesni_mb --cipher-iv-sz 8 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo 3des-cbc --cipher-op encrypt
+
+
+
+./dpdk-test-crypto-perf --socket-mem 1024,0 --legacy-mem --vdev crypto_openssl -l 1,10 -n 6 \
+-- --buffer-sz 64,128,256,512,1024,2048 --optype cipher-then-auth --ptest throughput --auth-key-sz 16 --cipher-key-sz 24 \
+--devtype crypto_openssl --cipher-iv-sz 8 --auth-op generate --burst-sz 32 --total-ops 10000000 --digest-sz 12 --auth-algo sha1-hmac \
+--cipher-algo 3des-cbc --cipher-op encrypt
+
+
+
+
+
+
+
+./dpdk-test-crypto-perf  -l 6-7 --vdev crypto_aesni_mb -a 0000:00:00.0 -- --ptest throughput --devtype crypto_aesni_mb --optype auth-then-cipher 
+--cipher-algo 3des-cbc --cipher-op decrypt --cipher-key-sz 24 --cipher-iv-sz 8 
+--auth-algo aes-xcbc-mac --auth-op verify --auth-key-sz 16 --digest-sz 12 --total-ops 1 -
+-test-file 3des_aes_xcbc.data --buffer-sz 32
+
+
+
+./dpdk-test-crypto-perf  -l 6-7 --vdev crypto_aesni_mb -a 0000:00:00.0 -- --ptest throughput --devtype crypto_aesni_mb --optype auth-then-cipher 
+--cipher-algo 3des-cbc --cipher-op decrypt --cipher-key-sz 24 --cipher-iv-sz 8 --auth-algo aes-xcbc-mac
+ --auth-op verify --auth-key-sz 16 --digest-sz 12 --total-ops 1 --test-file 3des_aes_xcbc.data --buffer-sz 32
+
+
+
+
+ER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+  95640 root      20   0   16.2g  17772  14528 R  99.9   0.0   3:19.95 dpdk-test-crypt
+  95650 root      20   0   16.2g  17772  14528 R  99.9   0.0   1:38.90 dpdk-worker10
+  95641 root      20   0   16.2g  17772  14528 S   0.0   0.0   0:00.00 dpdk-intr
+  95642 root      20   0   16.2g  17772  14528 S   0.0   0.0   0:00.00 dpdk-mp-msg
+  95651 root      20   0   16.2g  17772  14528 S   0.0   0.0   0:00.00 dpdk-telemet-v2
+
+
+
+
+
+Overhead  Shared Object             Symbol
+  49.54%  dpdk-test-crypto-perf     [.] rte_eal_wait_lcore
+  41.02%  libIPSec_MB.so.1.5.0      [.] imb_aes_gmac_update_256_vaes_avx2
+   2.98%  dpdk-test-crypto-perf     [.] aesni_mb_dequeue_burst
+   1.13%  dpdk-test-crypto-perf     [.] cperf_set_ops_cipher_auth
+   1.10%  dpdk-test-crypto-perf     [.] post_process_mb_job
+   1.02%  libIPSec_MB.so.1.5.0      [.] submit_burst_nocheck_avx512_t2
+   0.76%  dpdk-test-crypto-perf     [.] aesni_mb_digest_appended_in_src
+   0.57%  dpdk-test-crypto-perf     [.] ipsec_mb_enqueue_burst
+   0.54%  dpdk-test-crypto-perf     [.] cperf_throughput_test_runner
+   0.29%  [kernel]                  [k] delay_halt_tpause
+   0.17%  libIPSec_MB.so.1.5.0      [.] get_next_burst_avx512_t2
+   0.11%  libIPSec_MB.so.1.5.0      [.] 0x0000000000abb69b
+   0.09%  libIPSec_MB.so.1.5.0      [.] 0x0000000000abadab
+
+
+
+
+Overhead  Shared Object             Symbol
+  49.40%  dpdk-test-crypto-perf     [.] rte_eal_wait_lcore                                                                                          ◆
+  35.93%  libIPSec_MB.so.1.5.0      [.] imb_aes_gmac_update_256_vaes_avx2                                                                           ▒
+   4.62%  dpdk-test-crypto-perf     [.] aesni_mb_dequeue_burst                                                                                      ▒
+   1.98%  dpdk-test-crypto-perf     [.] post_process_mb_job                                                                                         ▒
+   1.93%  dpdk-test-crypto-perf     [.] cperf_set_ops_cipher_auth                                                                                   ▒
+   1.52%  libIPSec_MB.so.1.5.0      [.] submit_burst_nocheck_avx512_t2                                                                              ▒
+   1.16%  dpdk-test-crypto-perf     [.] aesni_mb_digest_appended_in_src                                                                             ▒
+   0.82%  dpdk-test-crypto-perf     [.] ipsec_mb_enqueue_burst                                                                                      ▒
+   0.77%  dpdk-test-crypto-perf     [.] cperf_throughput_test_runner                                                                                ▒
+   0.32%  libIPSec_MB.so.1.5.0      [.] get_next_burst_avx512_t2                                                                                    ▒
+   0.31%  [kernel]                  [k] delay_halt_tpause                                                                                           ▒
+   0.13%  libIPSec_MB.so.1.5.0      [.] 0x0000000000abb69b                                                                                          ▒
+   0.13%  libIPSec_MB.so.1.5.0      [.] 0x0000000000abadab                                                                                          ▒
+   0.07%  libIPSec_MB.so.1.5.0      [.] 0x0000000000abada4                                  
+   
+   
+   
+   
+https://www.sdnlab.com/21123.html
+
+
+
+
+/** Get session from op. If sessionless create a session */
+
+
+
+/** Get session from op. If sessionless create a session */
+static __rte_always_inline void *
+ipsec_mb_get_session_private(struct ipsec_mb_qp *qp, struct rte_crypto_op *op)
+{
+	struct rte_cryptodev_sym_session *sess = NULL;
+	uint32_t driver_id = ipsec_mb_get_driver_id(qp->pmd_type);
+	struct rte_crypto_sym_op *sym_op = op->sym;
+	uint8_t sess_type = op->sess_type;
+	void *_sess;
+	struct ipsec_mb_internals *pmd_data = &ipsec_mb_pmds[qp->pmd_type];
+
+	switch (sess_type) {
+	case RTE_CRYPTO_OP_WITH_SESSION:
+		if (likely(sym_op->session != NULL))
+			sess = sym_op->session;
+		else
+			goto error_exit;
+	break;
+	case RTE_CRYPTO_OP_SESSIONLESS:
+		if (!qp->sess_mp ||
+		    rte_mempool_get(qp->sess_mp, (void **)&_sess))
+			return NULL;
+
+		sess = _sess;
+	
+		if (sess->sess_data_sz < pmd_data->session_priv_size) {
+			rte_mempool_put(qp->sess_mp, _sess);
+			goto error_exit;
+		}
+
+		if (unlikely(pmd_data->session_configure(qp->mb_mgr,
+			CRYPTODEV_GET_SYM_SESS_PRIV(sess), sym_op->xform) != 0)) {
+			rte_mempool_put(qp->sess_mp, _sess);
+			goto error_exit;
+		}
+
+		sess->driver_id = driver_id;
+		sym_op->session = sess;
+
+	break;
+	default:
+		IPSEC_MB_LOG(ERR, "Unrecognized session type %u", sess_type);
+	}
+
+	return CRYPTODEV_GET_SYM_SESS_PRIV(sess);
+
+error_exit:
+	op->status = RTE_CRYPTO_OP_STATUS_INVALID_SESSION;
+	return NULL;
+}
+
