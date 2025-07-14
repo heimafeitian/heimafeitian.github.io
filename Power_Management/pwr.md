@@ -75,4 +75,29 @@ check the Result
  
 cpupower -c all frequency-set -f 0.8GHZ
 
+turn off:
+The way to turn off CPU cores, so as to limit system to the expected cores.
+
+ 
+
+# echo 0 > /sys/devices/system/cpu/cpu{}/online
+
+ 
+The way to turn off CPU cores, so as to limit system to the expected cores.
+
+For example:
+
+# echo 0 > /sys/devices/system/cpu/cpu2/online
+
+# echo 0 > /sys/devices/system/cpu/cpu1/online
+
+# echo 0 > /sys/devices/system/cpu/cpu1/online
+
+
+Enable true promiscuous mode and check unicast, multicast, broadcast traffic
+
+
+https://www.intel.cn/content/www/cn/zh/communications/ai-sd-wan.html
+
+
 
