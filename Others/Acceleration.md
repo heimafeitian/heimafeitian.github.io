@@ -25,6 +25,19 @@ Intel AMX Technology Brief.pdf
 
 
 01 QAT  
+00 Quick StartGuide
+01 QAT Document
+01 QAT Technology and Roadmap
+02 QAT Hardware
+02 QAT Applications
+03 Customer Enable
+04 Competition and Performance
+05 QAT Solution
+06 QAT WhitePaper
+07 PRC QAT IRF
+08 Crypto NI
+
+
 02 DLB  
 03 DSA  
 04 IAA  
