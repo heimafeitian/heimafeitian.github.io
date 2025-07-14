@@ -1,0 +1,278 @@
+1.check turbo status
+
+
+Turbo Boost allows to run one or many CPU cores to higher P-states than usual. 
+The maximum P-state is constrained by the following factors:
+
+The number of active cores (in C0 or C1 state)
+The estimated current consumption of the processor (Imax)
+The estimated power consumption (TDP - Thermal Design Power) of processor
+The temperature of the processor
+
+
+
+# Disabling turbo mode 
+wrmsr -a 0x1a0 0x4000850089 
+# to enable turbo mode use 0x850089
+wrmsr -a 0x1a0 0x850089 
+#checka
+rdmsr -a -x -f 63:0  0x1a0
+
+Read turbo-boost msr register for core 0 (change -pC, for core no. C)
+rdmsr -p0 0x1a0 -f 38:38
+If output of above command is '0', it means turbo boost is on. 
+
+Disable turbo boost using: wrmsr -p0 0x1a0 0x4000850089
+To disable turbo boost for other cores(let's say core 7), repeat the above command: wrmsr -p7 0x1a0 0x4000850089
+
+How to enable/disable Turbo Boost
+First check the BIOS if the turbo boost can be disabled.
+- EDK II Menu -> Socket Configuration -> Advanced Power Management Configuration -> CPU P State Control -> Intel SST-PP = level 0
+- EDK II Menu -> Socket Configuration -> Advanced Power Management Configuration -> Hardware PM State Control -> Hardware P-State Intel = Native Mode
+- EDK II Menu -> Socket configuration -> Advanced Power Management Configuration -> CPU P-State control -> Turbo Mode = Enable
+
+
+
+ BIOS/Platform Configuration (RBSU) > Power and Performance Options > Intel(R) Turbo Boost Technology.
+Select a setting.
+Enabled
+
+Disabled—Reduces power usage, and also reduces the system’s maximum achievable performance under some workloads.
+
+
+
+Turbo Boost can also be disabled at runtime in the intel_pstate driver.
+
+Check if Turbo Boost is enabled:
+
+selma$ cat /sys/devices/system/cpu/intel_pstate/no_turbo
+0
+where 0 means that Turbo Boost is enabled. Disable Turbo Boost:
+
+selma$ echo 1|sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
+
+
+echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo
+
+
+If it is not possible to disable in BIOS, then use the script turbo-boost.sh script. The code is in below.
+
+
+=============================================================================================================
+#!/bin/bash
+
+if [[ -z $(which rdmsr) ]]; then
+echo "msr-tools is not installed. Run 'sudo apt-get install msr-tools' to install it." >&2
+exit 1
+fi
+
+if [[ ! -z $1 && $1 != "enable" && $1 != "disable" ]]; then
+echo "Invalid argument: $1" >&2
+echo ""
+echo "Usage: $(basename $0) [disable|enable]"
+exit 1
+fi
+
+sudo modprobe msr
+
+cores=$(cat /proc/cpuinfo | grep processor | awk '{print $3}')
+for core in $cores; do
+if [[ $1 == "disable" ]]; then
+sudo wrmsr -p${core} 0x1a0 0x4000850089
+fi
+if [[ $1 == "enable" ]]; then
+sudo wrmsr -p${core} 0x1a0 0x850089
+fi
+state=$(sudo rdmsr -p${core} 0x1a0 -f 38:38)
+if [[ $state -eq 1 ]]; then
+echo "core ${core}: disabled"
+else
+echo "core ${core}: enabled"
+fi
+done
+=====================================================================================================================
+2 .check uncore status
+
+get the current RING frequency
+rdmsr -a -x -f 63:0  0x621
+
+To change uncore freq:
+
+      >> wrmsr -a 0x620 0x1515    (0x1010 means to change the min and max uncore frequency to 0x10 and 0x10)
+	  
+RING frequency can be queried with:
+
+
+wrmsr -a 0x620 0x810
+
+wrmsr -a 0x620 0x1010
+
+wrmsr -a 0x620 0x1212
+
+
+rdmsr -a -x 0x620  # current RING frequency, multiply by 100 to get MHz
+
+rdmsr 0x620 # RING frequency limits (in HEX!): 0x8 - min, 0x23 - max (translate to DEC and multiply by 100 to get MHz)
+823
+
+Fixing uncore frequency
+wrmsr -a 0x620 0x1010
+Uncore frequency can be set by writing the same value for both minimum and maximum frequency through MSR 0x620 on each socket. 
+In MSR 0x620, bits 0-7 indicate the maximum frequency (in units of 100Mhz) while bits 8-15 capture the minimum frequency. 
+For example, if you want to set the uncore frequency to 2700 MHz, you need to write the value 27 (0x1b in hex) for both max and min frequency. 
+So, 0x1b1b would be written to MSR 0x620. You can use EMON driver to write to the MSR and the following command will automatically write to both sockets
+
+emon  --write-msr  0x620=0x1b1b
+
+
+
+0x620设置min和max，如果是动态调整，需要打开UFS，uncore freq scaling
+
+3.Fixing the core frequency
+
+for i in `seq 0 11`; "echo 200000 > /sys/devices/system/cpu/cpu$i/cpufreq/scaling_min_freq"; done
+for i in `seq 0 11`; do sudo bash -c "echo 200000 > /sys/devices/system/cpu/cpu$i/cpufreq/scaling_max_freq"; done
+
+
+
+
+echo 2000000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+echo 2000000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+
+echo 1000000 > /sys/devices/system/cpu/cpu5/cpufreq/scaling_min_freq
+echo 1000000 > /sys/devices/system/cpu/cpu5/cpufreq/scaling_max_freq
+
+
+echo 1000000 > /sys/devices/system/cpu/cpu45/cpufreq/scaling_min_freq
+echo 1000000 > /sys/devices/system/cpu/cpu45/cpufreq/scaling_max_freq
+
+Fixing core frequency:
+
+
+HWP 
+
+
+
+If you want to fix the frequency to maximum operational frequency for your cpu ( lets say 2 Ghz), you can use these commands:
+
+echo 2000000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+echo 2000000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+
+Run this to observe current cpu frequency to verify(run a workload which consumes cpu on another instance of terminal to) :
+
+cpupower frequency-info
+
+watch -n 0.1 cat /sys/devices/system/cpu/cpu5/cpufreq/scaling_cur_freq
+watch -n 0.1 cat /sys/devices/system/cpu/cpu5/cpufreq/scaling_min_freq
+watch -n 0.1 cat /sys/devices/system/cpu/cpu5/cpufreq/scaling_max_freq
+
+watch -n 0.1 cat /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+
+echo "Set CPU frequency"
+for freq in $(find /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_m*_freq); do echo 2900000 > $freq ; done
+
+base_frequency:
+
+run "rdmsr -f 15:8 0xce". This returns the hex value of the Maximum Non-Turbo Ratio (we'll call his P1) for the package. e.g. 0x17 is 23, or 2.3GHz.
+run "cat  /sys/devices/system/cpu/cpu*/cpufreq/base_frequency" 
+Ensure each socket has the expected number of cores
+Ensure that all cores show a base_frequency of  P1 (if P1 index is 23, base_frequency should show 2300)
+Required Test Case Report Contents:
+rdmsr -f 15:8 0xce
+sysfs file contents for all cores for the following files: base_frequency, cpuinfo_max_freq, scaling_max_freq, cpuinfo_min_freq, scaling_min_freq
+rdmsr -f 15:8 -a 0x774 (HWP_REQUEST.max for all cores)
+rdmsr -f 7:0 -a 0x774 (HWP_REQUEST.min for all cores)
+
+rdmsr 0x770
+
+rdmsr -f 31:0 -a 0x774
+
+#######Note: MSR 0x774 bytes 4,3,2,1 are epp, na, max, min. EPP above changes from 0x00 to 0x80 when switching form Performance governor to powersave governor
+
+
+wrmsr -a 0x774 0x80001212
+
+80002208
+
+wrmsr -a 0x774 80002208
+
+rdmsr -a 0x774
+
+
+80001212
+
+要求CPU主频在软件配置定死在一个值，如2.6GHz，但uncore主频根据CPU负荷动态调整
+
+
+cc
+Enhanced Intel SpeedStep® Technology enables operating system to control and select P-state.
+
+The following are the key features of Enhanced Intel SpeedStep® Technology:
+
+Multiple frequency and voltage points for optimal performance and power efficiency. These operating points are known as P-states.
+Frequency selection is software-controlled by writing to processor model-specific registers (MSRs). The voltage is optimized based on the selected frequency and the number of active processor IA cores.
+Once the voltage is established, the Phase Locked Loop (PLL) locks on to the target frequency.
+All active processor IA cores share the same frequency and voltage. In a multicore processor, the highest frequency P-state requested among all active IA cores is selected.
+Software-requested transitions are accepted at any time. If a previous transition is in progress, the new transition is deferred until the previous transition is completed.
+The processor controls voltage ramp rates internally to ensure glitch-free transitions.
+Because there is low transition latency between P-states, a significant number of transitions per-second are possible.
+
+
+
+processor.max_cstate=0 
+
+
+intel_idle.max_cstate=0 intel_pstate=disable processor.max_cstate=0
+
+
+
+#check turbo status
+rdmsr -a -x -f 63:0  0x1a0
+
+#get the current uncore frequency
+rdmsr -a -x -f 63:0  0x621
+
+#get the uncore frequency scalling range
+rdmsr -a -x 0x620
+
+#get the core frequency scalling range
+rdmsr -f 31:0 -a 0x774
+
+
+#Fixing uncore frequency
+
+wrmsr -a 0x620 0x1010
+
+#change uncore scaling freq min/max(800MHZ-1600MHZ)
+
+wrmsr -a 0x620 0x810
+
+
+./ptu -mon -log -csv -logdir <dir-name> -logname <file-name>
+
+
+[14:29] Ajmera, Vishal
+watch -n1 cpupower -c 4-16,68-80 monitor
+
+[14:30] Ajmera, Vishal
+watch -n1 cpupower -c 19-31,83-95 monitor
+
+watch -n1 'turbostat -q -i 1 --cpu 0-10 --show CPU,Avg_MHz,Busy%,Bzy_MHz,TSC_MHz,IRQ,CoreTmp | head -n12'      
+
+[13:36] Ma, Jianwei
+cpupower idle-info
+
+[13:36] Ma, Jianwei
+cpupower      idle-set -E  
+
+[13:36] Ma, Jianwei
+above command is to enable
+
+[13:37] Ma, Jianwei
+cpupower      idle-set -d  1
+
+[13:37] Ma, Jianwei
+cpupower      idle-set -d 2
+ laugh 1
+
+
