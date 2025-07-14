@@ -80,3 +80,4 @@ busy polling	kernel > 5.11
 
 AF_XDP video:
 https://networkbuilders-staging.onsumaye.com/af-xdp-in-kernel-fast-path-address-family-express-data-path
+af-xdp-sockets-high-performance-networking-for-cloud-native-networking-technology-guide.pdf
