@@ -1,0 +1,27 @@
+apt-get install libjansson-dev
+
+apt install pciutils
+
+dpdk-testpmd -l 20-22 -- -i
+
+kubectl cp dpdk-testpmd default/dpdkpod:/root/
+
+
+
+dpdk-testpmd -l 20-22 -n 4  -a 0000:1a:02.1  -- -i --rxq=4 --txq=4 --nb-cores=2  --nb-ports=1
+
+dpdk-testpmd -l 2-4 -n 4  -a 0000:1a:02.0  -- -i --rxq=4 --txq=4 --nb-cores=2  --nb-ports=1
+
+docker build -t dpdp-ubunt --build-arg http_proxy=${http_proxy} --build-arg https_proxy=${http_proxy} -f Dockerfile 
+
+docker run -d -it --net=host --privileged  -v /home/jack:/home/jack/ -v /sys/bus/pci/devices:/sys/bus/pci/devices -v /sys/kernel/mm/hugepages:/sys/kernel/mm/hugepages -v /sys/devices/system/node:/sys/devices/system/node -v /dev:/dev -v /usr:/usr -v /root:/root ubuntu:20.04
+
+
+
+
+docker run -itd --privileged --name dpdk-test \
+-v /sys/bus/pci/devices:/sys/bus/pci/devices \
+-v /sys/kernel/mm/hugepages:/sys/kernel/mm/hugepages \
+-v /sys/devices/system/node:/sys/devices/system/node \
+-v /dev:/dev \
+-v /app:/app dpdk-ubuntu:v1.0.1
