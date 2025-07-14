@@ -182,3 +182,12 @@ Copy the patches to the dpdk source directory
  0 indicates the core is at 0% utilization. Utilization is on a scale 0-100
  So for instance core 33 is unused and core 34 has 0% utilization
 
+
+
+https://patches.dpdk.org/project/dpdk/patch/20220824162442.631456-4-kevin.laatz@intel.com/
+
+
+https://github.com/intel-innersource/networking.dataplane.dpdk.dpdk.git
+
+
+
