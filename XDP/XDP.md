@@ -78,4 +78,5 @@ PMD zero copy	kernel > v5.4-rc1
 shared_umem	kernel > v5.10 & libbpf > 0.2.0
 busy polling	kernel > 5.11
 
-
+AF_XDP video:
+https://networkbuilders-staging.onsumaye.com/af-xdp-in-kernel-fast-path-address-family-express-data-path
