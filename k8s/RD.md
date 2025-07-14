@@ -51,3 +51,10 @@ microservices-solution-optimizations-with-intel-xeon-scalable-processor-solution
 network-and-edge-reference-system-architectures-portfolio-user-manual-1671520008.pdf（已高亮）
 Networking framework for tracing microservices_08182020.pptx
 
+k8s:
+adv-network-features-in-kubernetes-app-note.pdf
+enabling_new_features_in_kubernetes_for_NFV.pdf（已高亮）
+K8s CNI.pptx
+k8s Scalable Network With Calico.pptx
+multiple-network-interfaces-support-in-kubernetes-feature-brief.pdf
+sr-iov-with-kubernetes-networking-and-observability-technology-guide.pdf
