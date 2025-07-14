@@ -7,3 +7,13 @@ power-management-enhanced-power-management-for-low-latency-workloads-technology-
 power-manager-kubernetes-operator-technology-guide-1645720030.pdf
 Sustainability-Power_Insights_Kit_Technology_Guide_7302491v1.pdf
 Tele_Aware_Schedl_Enhancement_Utilization_Platform_Aware_Schedl_Tech_Guide_648029v2.pdf
+
+
+
+634434-whitley-platform-performance-and-power-optimization-guide.pdf
+736642_Leveraging_Power_MGMT_Technology_TG_Rev1p0.pdf
+acpi-config-power-interface-spec.pdf
+Evaluation of CPU Frequency Transition Latency.pdf
+Linux_Power_thermal.pdf
+Power Optimisation and Efficiency.pdf
+power-management-technology-overview-technology-guide.pdf
