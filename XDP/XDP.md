@@ -81,3 +81,20 @@ busy polling	kernel > 5.11
 AF_XDP video:
 https://networkbuilders-staging.onsumaye.com/af-xdp-in-kernel-fast-path-address-family-express-data-path
 af-xdp-sockets-high-performance-networking-for-cloud-native-networking-technology-guide.pdf
+
+
+3371038.pdf
+af_xdp_ovs_intel_xeon_gold_6230_performance_report_v2.pptx
+af-xdp-sockets-high-performance-networking-for-cloud-native-networking-technology-guide.pdf
+EPG_SW_ITP_IP_Drivers_FINAL2.pptx
+Express_Data_Path.pdf
+Fast Userspace OVS with AF_XDP.pptx
+fosdem_2018_v3.pdf
+lpc18_paper_af_xdp_perf-v2.pdf
+OVS AF_XDP performance test .pptx
+pm-06-DPDK-PMD-for-AF_XDP.pdf
+XDP_Introduction.pptx
+XDP-white1_checked.pptx
+
+
+
