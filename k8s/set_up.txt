@@ -1,0 +1,952 @@
+1、参考INSTALL.md生成helloworld和cndp镜像
+
+apt proxy 略
+
+dependencies
+=======================================================
+dependencies
+The following package are required to build CNDP libraries and examples.
+===================================================================================---------
+sudo apt-get update && sudo apt-get install -y \
+    build-essential libbsd-dev libelf-dev libjson-c-dev libnuma-dev libpcap-dev meson pkg-config
+	
+	
+	sudo apt-get install -y
+----------------------------------------------------------------------------------------	
+Optional packages needed to build documentation
+
+sudo apt-get install -y doxygen python3-sphinx
+===============================================================================================================
+libbpf
+The libbpf is a dependency of CNDP. Starting with Ubuntu 20.10 it can be installed using apt. For earlier Ubuntu versions, or for users who want the latest code,
+ it can be installed from source.
+
+Install libbpf from package manager
+-------------------------------------------------
+sudo apt-get install -y libbpf-dev
+----------------------------------------------------------------------
+Install libbpf from source
+#https_proxy="https://user:password@proxy.server:port" 
+git clone https://github.com/libbpf/libbpf.git
+cd libbpf
+git checkout ...
+make -C src
+sudo make -C src install
+
+------------------------------------------------------------------------
+The library and pkgconfig file is installed to /usr/lib64, which is not where the loader or pkg-config look. 
+Fix this by editing the ldconfig and exporting the PKG_CONFIG_PATH.
+
+sudo vim /etc/ld.so.conf.d/x86_64-linux-gnu.conf
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# add /usr/lib64 line to the bottom of the file, save and exit.
+/usr/lib64
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+run：
+
+sudo ldconfig
+export PKG_CONFIG_PATH=/usr/lib64/pkgconfig
+==================================================================================================
+Build CNDP
+Install packages to build CNDP
+sudo apt install -y meson ninja-build libnuma-dev cmake libbsd-dev libjson-c-dev libpcap-dev
+
+=============================================================================
+#Clone and build CNDP
+#git clone [TBD]/cndp.git
+cd cndp21.09 or 22.01
+make
+
+
+
+Run CNDP examples
+helloworld
+The most basic example is helloworld.
+
+./builddir/examples/helloworld/helloworld
+
+=========================================================================
+
+cndpfwd
+An example that uses networking is cndpfwd. It requires the underlying network interface uses, e.g. AF_XDP sockets. Make sure the kernel on which you intend to run the application supports AF_XDP sockets, i.e. CONFIG_XDP_SOCKETS=y.
+
+grep XDP_SOCKETS= /boot/config-`uname -r`
+Configure an ethtool filter to steer packets to a specific queue.
+
+sudo ethtool -N <devname> flow-type udp4 dst-port <dport> action <qid>
+sudo ip link set dev <devname> up
+Instruct cndpfwd to receive, count, and drop all packets on the previously configured queue. To configure cndpfwd, 
+edit the examples/cndpfwd/fwd.jsonc configuration file. Make sure the "lports" section has the same netdev name and queue id 
+for which the ethtool filter is configured. Make sure the "threads" section has the correct "lports" configured. Then launch the application, specifying the updated configuration file.
+
+sudo ./builddir/examples/cndpfwd/cndpfwd -c examples/cndpfwd/fwd.jsonc lb
+
+
+ifconfig ens786f0 up
+ethtool -N  ens786f0 rx-flow-hash udp4 fn
+ethtool -N  ens786f0 flow-type udp4 src-port 2345 dst-port 2145 action 0
+
+ethtool -n  ens786f0
+
+ethtool -N ens786f0 delete 7679
+
+
+pkt = Ether(dst="3c:fd:fe:cf:32:44")/IP()/UDP(sport=2345,dport=2145)/("X"*480)
+
+sendp(pkt,iface="ens803f0",count=100,inter=1)
+
+
+IVF:
+
+
+echo 2 >  /sys/class/net/ens786f0/device/sriov_numvfs 
+
+
+ethtool -K ens786f0 ntuple on
+
+ethtool -U ens786f0 flow-type tcp4 src-ip 192.168.10.1 dst-ip 192.168.10.2 src-port 2000 dst-port 2001 port 0 action 2 
+
+
+ ethtool -U ens786f0 flow-type tcp4 src-ip 192.168.10.1 dst-ip 192.168.10.2 src-port 2000 dst-port 2001 vf 1 queue 2 
+ 
+ethtool -U ens786f0 flow-type tcp4 src-ip 192.168.10.1 dst-ip 192.168.10.2 src-port 2000 dst-port 2001 vf 1 queue 0
+
+
+ethtool -u ens786f0
+
+pkt = Ether(dst="3c:fd:fe:cf:32:44")/IP()/UDP(sport=2345,dport=2145)/("X"*480)
+
+sendp(pkt,iface="ens803f0",count=100,inter=1)
+
+
+pkt = Ether(dst="da:a8:6b:ba:d9:5d")/IP(dst="192.168.10.2", src="192.168.10.1")/TCP(sport=2000,dport=2001)/("X"*480)
+
+sendp(pkt,iface="ens803f0",count=100,inter=1)
+
+ethtool -N  ens801v0 rx-flow-hash tcp4 fn
+
+
+ethtool -U ens801v0 flow-type udp4 dst-port  2100 action 2
+
+
+
+ethtool -N ens786f0 delete 7679
+
+
+
+
+
+=================================================================================================================
+Docker-------------》
+
+
+must install docker first
+
+reference
+
+https://wiki.ith.intel.com/display/ValArchTeam/Install+Docker+on+Ubuntu
+
+
+make docker-image
+==========================================================================================================
+CNDP POD
+
+how to setup a single node cluster where you can launch a CNDP container
+uses kubeadm to bootstrap the cluster
+
+
+
+Setup K8s Env:
+
+
+
+hostnamectl set-hostname rose
+
+sudo cat >/etc/hosts <<EOF
+
+
+cat <<EOF | sudo tee /etc/hosts 
+127.0.0.1 localhost.localdomain localhost
+10.239.173.43 rose.com rose
+EOF
+
+export no_proxy=10.239.173.233,rose.com,localhost,127.0.0.1,10.96.0.0/12
+
+
+
+=======================================================================================
+Install Docker
+
+must install docker first
+
+reference
+
+https://wiki.ith.intel.com/display/ValArchTeam/Install+Docker+on+Ubuntu
+
+
+
+
+Add the docker repo:
+
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common gnupg2
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) \
+  stable"
+  
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) \
+stable"
+  
+  
+Install docker-ce:
+
+sudo apt-get install -y docker-ce docker-ce-cli
+
+
+Ensure that the overlay driver is what's used for docker-ce and memlock limit is removed:
+
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2",
+  "default-ulimits": {
+    "memlock": {
+      "Name": "memlock",
+      "Hard": -1,
+      "Soft": -1
+   }
+  }
+}
+EOF
+Configure the proxy settings for docker:
+
+sudo mkdir -p /etc/systemd/system/docker.service.d
+
+cat <<EOF | sudo tee /etc/systemd/system/docker.service.d/proxy.conf
+[Service]
+Environment="HTTP_PROXY=http://proxy.ir.intel.com:911/"
+Environment="HTTPS_PROXY=http://proxy.ir.intel.com:911/"
+Environment="NO_PROXY=localhost,127.0.0.1,si-docker.ir.intel.com"
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+sudo systemctl status docker
+Add the user to the docker group:
+
+sudo usermod -aG docker $USER
+newgrp docker
+
+docker run hello-world
+
+
+
+=================================================================================================
+
+
+
+Install Kubeadm
+Add the kubeadm repo:
+
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+Install kubeadm:
+
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+
+===========================================================================================
+Create the cluster
+
+Ensure swap is disabled:
+
+sudo swapoff -a
+And setup hugepages (used later by CNDP pod):
+
+cat <<EOF | sudo tee -a /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+256
+EOF
+
+Launch a cluster:
+
+sudo kubeadm init --v 99 --pod-network-cidr=10.244.0.0/16  --ignore-preflight-errors=all
+==================================================================================================
+
+
+Copy the config file to $HOME/.kube
+-----------------------------------------------------------------------------------------
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+====================================================================
+CNI
+
+Install flannel
+
+kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/v0.15.1/Documentation/kube-flannel.yml
+---------------------------------------------------------------------------------------------------------------------------------------
+Untaint the controller node so you can schedule pods there and add a label to it: Remember to change HOSTNAME to your actual hostname in the commands below:
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl label node rose cndp="true"
+
+--------------------------------------------------------------------------------
+Setup Multus
+Setup Multus:
+
+git clone https://github.com/intel/multus-cni.git && cd multus-cni
+git checkout 30668ec22bd3e92ae2bb258aeff8aca744377574
+cat ./images/multus-daemonset.yml | kubectl apply -f -
+===================================================================================
+
+CNDP environment setup
+
+Refer to cndp/INSTALL.md and cndp/containerization/docker/README.md to setup the initial CNDP build environment.
+Follow the docker README.md to create the "cndp" container image used by the CNDP pod.
+
+
+make docker-image
+================================================================
+Configure the AF_XDP interface for the pod
+
+不能配置ip地址，端口需要up
+
+ifconfig ens786f0 inet6 del fe80::3efd:feff:fecf:3244/64
+ifconfig ens786f1 192.168.2.10 netmask 255.255.255.0
+
+ifconfig ens786f0 up
+ethtool -N  ens786f0 rx-flow-hash udp4 fn
+ethtool -N  ens786f0 flow-type udp4 src-port 2345 dst-port 2145 action 4
+
+
+Note: that these ethtool rules live on the netdev even after the netdev is removed from the pod network namespace. They can be removed by running the command:
+
+ethtool -N iface_name delete rule_num
+
+
+
+============================================================================
+Build and deploy K8s device plugin and CNI
+For detailed install instructions please refer to cndp/containerization/k8s/device-plugin/README.md. This section will provide a quick start for deploying the device plugin and CNI.
+
+Please ensure you have the dependencies installed.
+
+Navigate to the device plugin directory
+
+cd cndp/containerization/k8s/device-plugin
+Edit the config.json for the K8s device plugin in deployments/daemonset.yaml.
+
+{
+        "logLevel": "debug",
+        "logFile": "/var/log/cndp/cndp-dp-e2e.log",
+        "pools" : [
+                {
+                        "name" : "dp-pool",
+                        "drivers" : ["i40e"]
+                }
+        ]
+}
+The device plugin can be either deployed as a daemonset or launched from the command line.
+
+sudo make deploy
+
+
+=========================================================
+From the top level CNDP dir create network attachment definition:
+
+kubectl create -f containerization/k8s/networks/cndp-cni-nad.yaml
+Check the definition was added:
+
+kubectl get network-attachment-definitions
+
+
+
+
+===============================================================================================================
+Create CNDP pod
+kubectl create -f containerization/k8s/cndp-pods/cndp-0-0.yaml
+Check the CNDP pod
+kubectl describe pods
+
+===============================================================================================================
+
+check the install software:
+
+cat /etc/hosts
+
+env 
+
+cat /etc/modules-load.d/containerd.conf
+
+lsmod | grep overlay
+lsmod | grep br_netfilter
+
+#cat /etc/containerd/config.toml
+
+cat /etc/sysctl.d/99-kubernetes-cri.conf
+
+cat /etc/systemd/system/containerd.service.d/limits.conf
+
+
+Restart the containerd daemon
+
+
+systemctl daemon-reload
+systemctl restart containerd
+
+ apt list --installed  | grep apparmor-utils
+ apt list --installed  | grep containerd.io
+ apt list --installed  | grep kubelet
+ apt list --installed  | grep kubeadm
+ apt list --installed  | grep kubectl
+
+
+
+https://wiki.ith.intel.com/display/containers/Kubeadm+Ubuntu+20.04+Set+up
+
+
+cat /etc/systemd/system/containerd.service.d/limits.conf
+
+
+
+
+
+kubectl taint nodes rose node-role.kubernetes.io/master-
+
+
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl label node jack cndp="true"
+	
+kubectl get  nodes 
+	
+ifconfig ens786f0 up
+ethtool -N  ens786f0 rx-flow-hash udp4 fn
+ethtool -N  ens786f0 flow-type udp4 src-port 2345 dst-port 2145 action 4
+
+
+
+#ifconfig ens786f0 48.0.0.154/24 up
+ethtool -N  ens786f0 rx-flow-hash udp4 fn
+ethtool -N  ens786f0 flow-type udp4 src-port 2345 dst-port 2145 action 4
+
+ethtool -N ens786f0 delete 7679
+
+ethtool -n ens786f0
+
+
+ethtool -N ens786f0 flow-type udp4 dst-port 17 action 0
+
+
+pkt = Ether(dst="3c:fd:fe:cf:32:44")/IP()/UDP(sport=2345,dport=2145)/("X"*480)
+
+sendp(pkt,iface="ens803f0",count=100,inter=1)
+
+pkt = Ether(dst="3c:fd:fe:cf:32:44")/IP()/UDP(sport=23,dport=17)/("X"*480)
+
+sendp(pkt,iface="ens803f0",count=100,inter=1)
+
+
+CNDP examples/cndpfwd/cndpfwd
+
+IAVF:
+
+
+
+
+===============********************=================
+sudo vim /etc/ld.so.conf.d/x86_64-linux-gnu.conf
+add /usr/lib64 line to the bottom of the file, save and exit.
+
+***************************************************************
+
+
+sudo ldconfig
+export PKG_CONFIG_PATH=/usr/lib64/pkgconfig
+
+
+
+Add net-filers:
+$ kubectl exec cndp-0-0 -- ethtool -N  net1 rx-flow-hash udp4 fn
+$ kubectl exec cndp-0-0 -- ethtool -N  net1 flow-type udp4 src-port 2345 dst-port 2145 action 0
+
+
+
+
+
+
+
+ifconfig ens786f1 192.168.2.10 netmask 255.255.255.0
+
+
+ifconfig ens786f0 inet6 del fe80::3efd:feff:fecf:3244/64
+
+ifconfig ens786f0 inet del 48.0.0.154/32
+
+ifconfig ens786f0 48.0.0.154/24
+
+
+
+cat /home/jack/networking.dataplane.cndp.cndp-21.09/containerization/k8s/device-plugin/deployments/daemonset.yml
+
+      "logFile": "/var/log/cndp/cndp-dp.log",
+      "pools" : [
+              {
+                      "name" : "dp-pool",
+                      "drivers" : ["i40e"]
+              }
+      ]
+
+
+
+查看K8s版本：
+
+# 卸载服务
+kubeadm reset
+
+之后的工作
+
+iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+ip link set cni0 down
+ip link delete cni0 type bridge
+systemctl stop kubelet
+systemctl stop docker
+iptables --flush
+iptables -tnat --flush
+systemctl start kubelet
+systemctl start docker
+
+
+iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+ipvsadm --clear
+systemctl stop kubelet
+systemctl stop docker
+rm -rf /var/lib/cni/*
+rm -rf /var/lib/kubelet/*
+rm -rf /etc/cni/*
+rm -rf $HOME/.kube/config
+systemctl start docker
+
+
+
+
+swapoff -a
+
+systemctl daemon-reload
+systemctl restart docker
+
+
+
+
+主节点初始化
+kubeadm init --kubernetes-version=v1.13.0 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12
+
+kubeadm init --kubernetes-version=v1.21.2  --v 99 --pod-network-cidr=10.244.0.0/16  --ignore-preflight-errors=all
+
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+
+
+kubeadm init --kubernetes-version=v1.20.1 --v 99  --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=10.239.173.185 --token-ttl 0 --ignore-preflight-errors=SystemVerification
+
+
+
+
+# 删除rpm包
+rpm -qa|grep kube*|xargs rpm --nodeps -e
+
+# 删除容器及镜像
+docker images -qa|xargs docker rmi -f
+
+
+
+kubeadm reset
+kubectl version -o json
+kubectl cluster-info
+kubectl config view
+
+deployments/daemonset.yaml
+
+"logFile": "/var/log/cndp/cndp-dp.log",
+"pools" : [
+        {
+                "name" : "dp-pool",
+                "drivers" : ["i40e"]
+        }
+
+
+		
+		
+kubectl delete pods cndp-0-0 --force --grace-period=0
+
+
+
+kubectl get network-attachment-definitions
+
+kubectl delete network-attachment-definitions cndp-cni-afxdp0
+
+
+make undeploy
+
+ifconfig ens786f0 up
+ifconfig ens786f1 192.168.2.10 netmask 255.255.255.0
+
+ifconfig ens786f0 inet6 del fe80::3efd:feff:fecf:3244/64 
+
+
+
+-----》
+#kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/v0.15.1/Documentation/kube-flannel.yml
+
+kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v3.8/images/multus-daemonset.yml
+
+
+
+make deploy
+
+kubectl create -f containerization/k8s/networks/cndp-cni-nad.yaml
+
+kubectl get network-attachment-definitions
+
+kubectl create -f containerization/k8s/cndp-pods/cndp-0-0.yaml
+
+kubectl describe pods
+
+
+
+
+
+
+
+Multi-consumer and Multi-producer 
+
+
+
+
+
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl label node rose cndp="true"
+
+
+docker tag 6015ffec3ed9 lnmp:v1.0 
+
+docker image prune
+docker container prune
+
+1.停止所有容器：docker stop $(docker ps -a -q)
+
+2.删除所有容器：docker rm $(docker ps -a -q)
+
+3.删除所有镜像：docker rmi $(docker images -q)
+
+
+
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+mjy@rose:~/networking.dataplane.cndp.cndp-21.09/containerization/k8s/cndp-pods$ kubectl get pods -n kube-system
+NAME                                  READY   STATUS             RESTARTS         AGE
+coredns-64897985d-r68m7               1/1     Running            1 (7h26m ago)    9h
+coredns-64897985d-rs7wd               1/1     Running            1 (7h26m ago)    9h
+etcd-rose                             1/1     Running            39 (7h26m ago)   10h
+kube-apiserver-rose                   1/1     Running            0                7h21m
+kube-cndp-device-plugin-amd64-hx6v5   0/1     CrashLoopBackOff   21 (31s ago)     83m
+kube-controller-manager-rose          1/1     Running            0                7h21m
+kube-flannel-ds-kgcb9                 1/1     Running            1 (7h26m ago)    9h
+kube-multus-ds-lj9wb                  1/1     Running            1 (7h26m ago)    9h
+kube-proxy-grjs9                      1/1     Running            0                7h21m
+kube-scheduler-rose                   1/1     Running            0                7h21m
+
+
+
+kubectl describe pods kube-cndp-device-plugin-amd64-hx6v5 -n kube-system
+
+
+
+kubectl logs kube-cndp-device-plugin-amd64-hx6v5 -n kube-system
+
+
+
+将kernel.unprivileged_bpf_disabled sysctl设置为1，限制普通用户权限可以临时缓解该漏洞，方法如下：
+
+$sudo sysctl kernel.unprivileged_bpf_disabled=1
+
+sysctl kernel.unprivileged_bpf_disabled
+
+
+kubectl delete pods cndp-0-0 --force --grace-period=0
+kubectl delete -f  containerization/k8s/networks/cndp-cni-nad.yaml --ignore-not-found=true
+
+
+
+make deploy
+
+kubectl create -f containerization/k8s/networks/cndp-cni-nad.yaml
+
+kubectl create -f containerization/k8s/cndp-pods/cndp-0-0.yaml
+
+
+
+Check the CNDP pod
+kubectl describe pods
+Connecting to the cndp containers container
+kubectl exec -i -t cndp-0-0 --container control-0  -- /bin/bash
+kubectl exec -i -t cndp-0-0 --container cndp-0  -- /bin/bash
+Checking the container logs
+kubectl logs cndp-0-0 control-0
+kubectl logs cndp-0-0 cndp-0
+
+
+
+
+
+kubectl exec -i -t cndp-0-0 --container cndp-0  -- /bin/bash
+
+
+
+
+sudo mkdir /var/run/cndp
+sudo chown cndp:cndp /var/run/cndp
+
+
+cp /home/cndp/cndp/tools/jsonc_gen.sh /home/cndp/cndp/builddir/examples/cndpfwd
+sudo chown cndp:cndp /tmp/cndp.sock
+cd /home/cndp/cndp/builddir/examples/cndpfwd
+
+cndp@cndp-0-0:~/cndp/tools$ pwd
+/home/cndp/cndp/tools
+运行，jsonc_gen.sh;
+vi config.jsonc
+The CNDP metrics can be disabled in the config.jsonc file by setting "no-metrics": true
+cndpfwd -c config.jsonc lb
+
+
+
+
+
+cndpfwd -c config.jsonc lb
+
+
+
+
+unprivileged_bpf_disabled¶
+Writing 1 to this entry will disable unprivileged calls to bpf(); once disabled, calling bpf() without CAP_SYS_ADMIN or CAP_BPF will return -EPERM. Once set to 1, this can’t be cleared from the running kernel anymore.
+
+Writing 2 to this entry will also disable unprivileged calls to bpf(), however, an admin can still change this setting later on, if needed, by writing 0 or 1 to this entry.
+
+If BPF_UNPRIV_DEFAULT_OFF is enabled in the kernel config, then this entry will default to 2 instead of 0.
+
+0
+
+Unprivileged calls to bpf() are enabled
+
+1
+
+Unprivileged calls to bpf() are disabled without recovery
+
+2
+
+Unprivileged calls to bpf() are disabled
+
+
+开关确认
+unprivileged_bpf_disabled
+在/proc/sys/kernel/unprivileged_bpf_disabled里，可通过执行​​sysctl w kernel.unprivileged_bpf_disabled=0​​​来修改配置。配置含义见​ ​Documentation for /proc/sys/kernel/​​。
+
+值为0表示允许非特权用户调用bpf；
+值为1表示禁止非特权用户调用bpf且该值不可再修改，只能重启后修改；
+值为2表示禁止非特权用户调用bpf，可以再次修改为0或1。
+-----------------------------------
+
+
+
+RUN useradd -m --uid 1337 cndp && echo "cndp ALL=NOPASSWD: ALL" >> /etc/sudoers
+
+# Copy artifacts from the build container
+
+# Copy configurations from the host
+
+WORKDIR /home/cndp
+
+  2）cndp-0-0.yaml文件
+spec:
+  nodeSelector:
+    cndp: "true"
+  securityContext:
+    runAsGroup: 1337
+    runAsNonRoot: true
+    runAsUser: 1337
+
+
+
+	
+	
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    privileged: false
+    readOnlyRootFilesystem: true
+    runAsGroup: 1337
+    runAsNonRoot: true
+    runAsUser: 1337
+
+
+
+root@rose:/boot# grep -rn BPF_UNPRIV_DEFAULT_OFF
+config-5.17.3-051703-generic:118:CONFIG_BPF_UNPRIV_DEFAULT_OFF=y
+config-5.13.0-051300-generic:114:CONFIG_BPF_UNPRIV_DEFAULT_OFF=y
+
+
+
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+
+kubectl annotate – 更新资源的注解。
+kubectl api-versions – 以“组/版本”的格式输出服务端支持的API版本。
+kubectl apply – 通过文件名或控制台输入，对资源进行配置。
+kubectl attach – 连接到一个正在运行的容器。
+kubectl autoscale – 对replication controller进行自动伸缩。
+kubectl cluster-info – 输出集群信息。
+kubectl config – 修改kubeconfig配置文件。
+kubectl create – 通过文件名或控制台输入，创建资源。
+kubectl delete – 通过文件名、控制台输入、资源名或者label selector删除资源。
+kubectl describe – 输出指定的一个/多个资源的详细信息。
+kubectl edit – 编辑服务端的资源。
+kubectl exec – 在容器内部执行命令。
+kubectl expose – 输入replication controller，service或者pod，并将其暴露为新的kubernetes service。
+kubectl get – 输出一个/多个资源。
+kubectl label – 更新资源的label。
+kubectl logs – 输出pod中一个容器的日志。
+kubectl namespace -（已停用）设置或查看当前使用的namespace。
+kubectl patch – 通过控制台输入更新资源中的字段。
+kubectl port-forward – 将本地端口转发到Pod。
+kubectl proxy – 为Kubernetes API server启动代理服务器。
+kubectl replace – 通过文件名或控制台输入替换资源。
+kubectl rolling-update – 对指定的replication controller执行滚动升级。
+kubectl run – 在集群中使用指定镜像启动容器。
+kubectl scale – 为replication controller设置新的副本数。
+kubectl stop – （已停用）通过资源名或控制台输入安全删除资源。
+kubectl version – 输出服务端和客户端的版本信息。
+kubectl cordon 设定node不可使用|
+kubectl uncordon 设定node可以使用|
+kubectl drain 设定node进入维护模式|
+
+
+
+#docker exec -it 035bf7446767 /bin/bash
+
+
+k8s在其他用户下报错: /etc/kubernetes/admin.conf permission denied
+
+背景：最近客户需要回收root权限，需要自己创建audio用户并设置为sudo权限
+问题：项目都是用k8s部署的，创建了audio用户并设置了sudo权限之后，切换到audio用户下执行 kubectl get po报错：
+
+error: Error loading config file "/etc/kubernetes/admin.conf": open /etc/kubernetes/admin.conf: permission denied
+
+解决办法：
+
+1、切换至root用户
+2、修改admin.conf文件权限chmod 666 /etc/kubernetes/admin.conf
+3、再次切换至audio用户，执行kubectl get pods即可正常显示
+
+
+http://t.zoukankan.com/sandshell-p-11777194.html
+
+
+
+
+
+
+
+or to persist over reboot by adding
+
+    kernel.unprivileged_bpf_disabled=0
+to the /etc/sysctl.conf config file.
+
+
+https://www.kernel.org/doc/html/latest/admin-guide/sysctl/kernel.html#unprivileged-bpf-disabled
+
+
+
+
+
+
+K8S： Back-off restarting failed container 解决办法
+
+在deployment 镜像的后面加上命令
+command: [ "/bin/bash", "-ce", "tail -f /dev/null" ]
+
+
+
+when I restart the ubuntu,and type kubectl get nodes
+It always show
+
+change@change-VirtualBox:~$ kubectl get nodes
+The connection to the server 10.0.2.15:6443 was refused - did you specify the right host
+
+
+and I found how to solve this question.
+################################################################################
+sudo -i
+swapoff -a
+exit
+strace -eopenat kubectl version
+##############################################
+
+30
+
+From kubernetes official site:
+
+Verify that the $HOME/.kube/config file contains a valid certificate, and regenerate a certificate
+
+Unset the KUBECONFIG environment variable using:
+
+unset KUBECONFIG
+
+Or set it to the default KUBECONFIG location:
+
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+Another workaround is to overwrite the existing kubeconfig for the “admin” user:
+
+mv  $HOME/.kube $HOME/.kube.bak
+mkdir $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+
+
+
+
+
+
+
+Edit /etc/modprobe.d/blacklist.conf:
+
+sudo vi /etc/modprobe.d/blacklist.conf
+Add:
+
+blacklist bpfilter
+Save and close vi by pressing: :wq and Enter.
+
+Then run the following commands:
+
+sudo ufw status 
+sudo ufw disable 
+sudo ufw status
