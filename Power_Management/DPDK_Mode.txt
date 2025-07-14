@@ -1,0 +1,237 @@
+UPM test：
+https://github.com/intel-innersource/networking.dataplane.dpdk.dpdk/compare/main...alt_busyness_telemetry
+
+
+https://patches.dpdk.org/project/dpdk/patch/24c49429394294cfbf0d9c506b205029bac77c8b.1657890378.git.anatoly.burakov@intel.com/
+
+
+
+
+
+./dpdk-distributor -l 1-7 -n 4 -a -a 0000:18:00.0   -- -p 1
+
+
+
+
+
+
+
+It’s based on 20.11.3.
+
+https://github.com/intel-innersource/networking.dataplane.upm.upm-agent
+
+
+
+dpdk-testpmd -l 20-22 -n 4  -a 0000:b2:00.0  -- -i --rxq=4 --txq=4 --nb-cores=2  --nb-ports=1
+
+
+
+
+64:
+
+
+./dpdk-testpmd -l 1,2,42,3,43 -n 4  -a 0000:18:00.0  -- -i --rxq=4 --txq=4 --forward-mode=macswap --nb-cores=4  --nb-ports=1
+
+
+
+
+dpdk-testpmd -l 1-49 -n 4  -a 0000:18:00.0  -- -i --rxq=48 --txq=48 --forward-mode=macswap --nb-cores=48  --nb-ports=1
+
+
+
+安装 linux-tools 和 cpufrequtils 用于确保 cpu 与 turbo boost 一起正常工作。
+
+sudo apt-get install linux-tools-generic
+
+sudo apt-get install cpufrequtils
+默认情况下，Ubuntu 将缩放调控器设置为“Powersave”模式。为了获得最佳性能，请将缩放调节器设置为“性能”。如果以下文件“/etc/default/cpufrequtils”不存在，则创建它，并将给定的行添加到文件中。
+sudo vi /etc/default/cpufrequtils
+
+GOVERNOR="performance"
+重新启动 cpufrequtils 模块以将缩放调控器设置为“performance”。您还需要禁用 ondemand 模块以防止它在重新启动时覆盖更改。
+systemctl restart cpufrequtils
+
+systemctl disable ondemand
+检查是否已应用设置以及频率设置是否符合预期。从以下输出中要检查的关键事项是驱动程序显示为 intel_pstate，调节器显示为性能，频率范围达到 CPU 的最大频率，并且支持升压状态。
+在此文件夹中查找 Linux 工具。它将位于基于您的内核的子文件夹中：
+/usr/lib/linux-tools/sudo ./cpupower frequency-info
+
+analyzing CPU 0:
+
+driver: intel_pstate
+
+CPUs which run at the same hardware frequency: 0
+
+CPUs which need to have their frequency coordinated by software: 0
+
+maximum transition latency: Cannot determine or is not supported.
+
+hardware limits: 800 MHz - 3.40 GHz
+
+available cpufreq governors: performance powersave
+目录中还有另一个名为 x86_energy_perf_policy 的工具，用于确定如何使用升压状态。默认情况下，这设置为正常，因此您需要将其设置为性能。
+sudo ./x86_energy_perf_policy performance
+
+
+
+modprobe vfio enable_unsafe_noiommu_mode=1
+echo 1 > /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+
+echo enable_unsafe_noiommu_mode >
+
+
+64:
+DIR：/home/jack/dpdk-20.11-upm patched the telemetry.c suggesting in the GSG document
+
+
+run dpdk testpmd
+./dpdk-testpmd -l 2-6 -n 4  -a 0000:1a:02.1  -- -i --rxq=4 --txq=4 --forward-mode=macswap --nb-cores=4  --nb-ports=1
+
+and upm-agent DIR：
+/home/jack/networking.dataplane.upm.upm-agent-main
+
+./upm-agent_alpha-rev2 -c ./config/config.json -l WARNING
+
+71:
+sent packet：
+
+./t-rex-64  -f cap2/imix_64_fast.yaml -m 10gbps -d 200000 -c 10
+
+
+
+
+
+./t-rex-64  -f cap2/imix_64_fast.yaml -m 50gbps -d 200000 -c 17
+
+https://fd.io/docs/vpp/v2101/usecases/simpleperf/trex1.html
+
+VPP config:
+==========================================================================
+
+set interface ip address eth0 10.10.1.1/24
+set interface ip address eth1 10.10.2.1/24
+set interface state eth0 up
+set interface state eth1 up
+show interface address
+FortyGigabitEthernet82/0/0 (up):
+  10.10.1.1/24
+FortyGigabitEthernet82/0/1 (up):
+  10.10.2.1/24
+local0 (dn):
+
+
+
+vpp# history
+1  show interface
+2  set interface ip address eth0 10.10.1.1/24
+3  set interface ip address eth1 10.10.2.1/24
+4  set interface state eth0 up
+5  set interface state eth1 up
+6  show interface address
+7  ip route add 16.0.0.0/8 via 10.10.1.2
+8  ip route add 48.0.0.0/8 via 10.10.2.2
+
+==========================================================
+VPP-------------Trex
+VF0-------------VF0
+VF1-------------VF1
+
+
+71:
+
+
+
+
+./t-rex-64 -f cap2/dns.yaml -m 10gbps -d 200000 -c 1
+
+./t-rex-64 -f cap2/dns.yaml -m 10gbps -d 20000 -l 1000
+
+ ./t-rex-64 -f avl/sfr_delay_10_1g.yaml  -m 15 -d 20000 -l 1000  -c 1
+
+[root@dcpae-centos-71-jack usertools]# cat /etc/trex_cfg.yaml
+- port_limit      : 2         # this option can limit the number of port of the platform
+  version         : 2
+  interfaces      : ["86:02.0","86:02.1"] #
+  platform :
+        master_thread_id  : 18
+        latency_thread_id : 19
+        dual_if   :
+             - socket   : 1
+               threads  : [20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,56,57,58,59,60,61]
+
+  port_info       :  # set eh mac addr
+#          - dest_mac        :   [0x32,0x54,0xC1,0x79,0xc1,0x45]  # port 0
+#            src_mac         :   [0x3c,0xfd,0xfe,0xcf,0x31,0x0c]
+           - ip: 10.10.2.2
+             default_gw: 10.10.2.1
+           - ip: 10.10.1.2
+             default_gw: 10.10.1.1
+
+
+
+
+
+Remove all blocking functions from the fast path
+The frequency writes are now non-blocking instead of blocking
+The telemetry reads now poll with a non-blocking read instead of just 1 blocking read (times out after 1ms)
+As the fast path is now non-blocking it is unlikely to be context switched by the CPU
+When UPM starts it sets itself as a high priority realtime process
+These 2 changes combined should prevent the CPU from context switching UPM when on a dedicated core
+Add a warning for if the telemetry times out and rocket the cores of the app to max if the telemetry times out
+
+
+[9:17] Heaton, Eric D
+The DPDK application which listens on a socket for requests from the UPM agent can in some instances 
+be context switched out by the kernel and may then take some time to respond when a request comes from the UPM agent. 
+This can be mitigated by increasing the priority of the telemetry thread,
+ so that the kernel will not context switch it as much as per default settings
+
+[9:18] Heaton, Eric D
+The new Alpha2 User's Guide shows how NEC can make this change in their UPF application (inside DPDK code)
+
+
+
+As part of the understanding your observations better -- specifically the difference in core busyness and frequencies
+between the two UPF instances running on the two different sockets -- we would suggest the following:
+
+
+Measure the UPF core busyness in the same 5 traffic scenarios (0%, 25%, 50%, 75%, 100%) without the UPM running. 
+If your UPF does not have a feature to print out this information, you can use the DPDK telemetry utility to do so. 
+The instructions are here, to enable the library and also to start the telemetry client: https://doc.dpdk.org/guides/howto/telemetry.html
+Once the client is initialized, at the prompt type, “/eal/lcore<tab>” and this will give the endpoint
+
+
+Check that both sockets are running at the same -- and desired -- uncore frequency
+At the command line, read the UNCORE_PERF_STATUS MSR with the following utility, “rdmsr -a 0x621”; 
+it will return a hex value for the uncore frequency (do this for both sockets)
+In the BIOS, check if uncore frequency scaling is set to floating/variable or at a fixed frequency
+For the purposes of this initial testing, we suggest that is set to the highest frequency for both sockets
+has context menu
+
+
+
+UPM have was able to updated to RT by doing the following:
+[root@ ~]# echo 200000 > /sys/fs/cgroup/cpu/user.slice/cpu.rt_runtime_us
+[root@ ~]# top -b -n 1 -H | grep upm
+3018532 root      rt   0  253888   1076    992 S  10.5   0.0   0:00.07 upm-agent_alpha
+
+
+./dpdk-l2fwd --lcores 0@44,1@62,2@45,3@63,4@46,5@64,6@47,7@65,8@48,9@66,10@49,11@67,12@50,13@68,14@51,15@69,16@52,17@70,18@53,19@71 -n 4 -- -q 1 -p 0x4
+
+./dpdk-l2fwd -l 0-19 -n 4 -- -q 1 -p 0x4 
+./dpdk-l2fwd -l 0-19 -n 4 -- -q 1 -p 0x4  --portmap="(0,0)(1,1) (0,2)(1,1)"
+
+
+
+
+./dpdk-l2fwd -n 1 -c f -- -q 1 -p 0xf
+
+./dpdk-l2fwd -n 1 -l 0-3 -- -q 1 -p 0xf
+
+./dpdk-l2fwd -n 1 --lcores 0@44,1@45,2@46,3@47,7,8,15,14 -- -q 1 -p 0xf
+
+
+
+watch -n 0.1 cat /sys/devices/system/cpu/cpu44/cpufreq/scaling_cur_freq
+watch -n 0.1 cat /sys/devices/system/cpu/cpu44/cpufreq/scaling_min_freq
+watch -n 0.1 cat /sys/devices/system/cpu/cpu44/cpufreq/scaling_max_freq
