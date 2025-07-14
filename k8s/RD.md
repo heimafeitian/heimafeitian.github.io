@@ -27,5 +27,18 @@ Reference_System_Architectures_Portfolio_2nd3rd4thGenIntelXeonSP_XeonD_UserManua
 
 
 cpu-pin-and-isolation-in-kubernetes-app-note.pdf
+ZTE WP
+1nfv-reference-design-for-a-containerized-vepc-application.pdf
+zte wp-upf-2022-中文版-v0.docx
+ZTE-Cloud-Native_WP_063022_REV03.pdf
+zte-uses-intel-container-bare-metal-reference-architecture-bmra-to-improve-performance-in-cloud-native-5g-core-upf-solution-1662157598.pdf
+zte-wp-upf-2021-v2.pdf
+zte-wp-upf-2021-v3-Diana.pdf
+SKT WP
+low-latency-5g-upf-using-priority-based-5g-packet-classification.pdf
+SAMSUNG
+Wireless-Core-Intel-Samsung-Performance-Whitepaper.pdf
+NEC
+NEC_UPF_Whitepaper.pdf
 
 
