@@ -1,0 +1,93 @@
+meson -Dexamples=all build
+echo  32  >  /sys/class/net/ens786/device/sriov_numvfs
+python3 dpdk-devbind.py --bind=vfio-pci 0000:1a:01.0 0000:1a:01.1 0000:1a:01.2
+
+
+testpmd:
+
+./dpdk-testpmd -c 0xff -n 4  -a 0000:1a:01.0  --file-prefix=vf0 --log-level=net_iavf:8  -- -i --forward-mode=rxonly --rxq=16 --txq=16
+
+
+
+
+l3fwd:
+
+./dpdk-l3fwd -l 1,2,5,6 -n 4 -a 0000:1a:01.0 -- -p 0x1 --parse-ptype --config="(0,0,1),(0,1,2),(0,2,5),(0,3,6)"
+
+l3=Ether(dst="6a:0f:d0:b6:4b:9b", src="00:0c:29:e2:bb:86")/IP(dst="1.1.1.1", src="192.168.10.1")/TCP(sport=0,dport=2002)/("X"*480)
+sendp(l3,iface="ens801",count=10000000,inter=1)
+
+
+l3fwd-power:
+
+./dpdk-l3fwd-power -l 1,2,5,6 -n 4 -a 0000:1a:01.0 -- -p 0x1 --parse-ptype --config="(0,0,1),(0,1,2),(0,2,5),(0,3,6)"
+
+
+l3=Ether(dst="3E:8D:2E:0C:ED:36", src="00:0c:29:e2:bb:86")/IP(dst="1.1.1.1", src="192.168.10.1")/TCP(sport=0,dport=2002)/("X"*480)
+sendp(l3,iface="ens786",count=10000000,inter=1)
+
+
+
+
+modprobe vfio-pci
+
+echo 32 >  /sys/class/net/ens801/device/sriov_numvfs    
+
+python3 dpdk-devbind.py --bind=vfio-pci 0000:b2:01.0
+
+
+./dpdk-l3fwd-power -l 1,2,5,6 -n 4 -a 0000:b2:01.0 -- -p 0x1 --parse-ptype --config="(0,0,1),(0,1,2),(0,2,5),(0,3,6)"
+
+./power.py -r 1-19 -e C6 -e C1 -e C1E
+
+
+
+
+vim /etc/default/grub
+grub2-mkconfig -o /boot/grub2/grub.cfg
+reboot
+
+
+BOOT_IMAGE=/vmlinuz-3.10.0-rt56 root=/dev/mapper/centos-root ro crashkernel=auto rd.lvm.lv=centos/root rd.lvm.lv=centos/swap intel_iommu=off usbcore.autosuspend=-1
+ selinux=0 enforcing=0 nmi_watchdog=0 softlockup_panic=0 audit=0 intel_pstate=disable cgroup_disable=memory mce=off hugepagesz=1G hugepages=40 
+hugepagesz=2M hugepages=0 default_hugepagesz=1G isolcpus=1-9 rcu_nocbs=1-9 kthread_cpus=0 irqaffinity=0 nohz_full=1-9
+
+
+./dpdk-l3fwd-power -l 1-2 -n 4
+
+
+
+
+./dpdk-l3fwd-power -l 1-2 -n 4 -- -p 0x1 -P --config="(0,0,2)"
+
+
+./dpdk-l3fwd-power --telemetry -l 1-3 -a 0000:b2:01.0 -- -p 0x0f --config="(0,0,2),(0,1,3)" --telemetry
+
+
+Power Lib Empty Poll Test:
+
+./dpdk-l3fwd-power -l 1-2 -n 4 -- -p 0x1 -P --config="(0,0,2)" –empty-poll="1,0,0" -l 10 -m 6 -h 1
+
+
+./dpdk-l3fwd-power -l 1-2 -n 4 -- -p 0x1 -P --config="(0,0,2)" –empty-poll="0,350000,500000" -l 10 -m 6 -h 1
+
+
+Note: For Intel Processor, If “Hyper Threading” enabled in BIOS, need change frequency on both HT core at the same time to let the frequency take effect. From DPDK 19.08,
+ vm_power_manager will set fifo channel for each core. Before DPDK 19.08, all core will share 1 fifo channel
+ 
+ 
+ PMD power management Mode
+ 
+./dpdk-l3fwd-power -l 1-2 -n 4 -- -p 0x1 -P --pmd-mgmt --config="(0,0,2)" 
+
+
+https://wiki.ith.intel.com/display/DPDKShannon/Power+Management
+
+https://wiki.ith.intel.com/display/DebugEncyclopedia/Power+Management+BKM
+
+https://wiki.ith.intel.com/display/DPDKShannon/Power+Management+Publications
+
+http://doc.dpdk.org/dts/test_plans/power_pstate_test_plan.html
+
+
+
