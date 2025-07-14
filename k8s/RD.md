@@ -41,4 +41,13 @@ Wireless-Core-Intel-Samsung-Performance-Whitepaper.pdf
 NEC
 NEC_UPF_Whitepaper.pdf
 
+service_mesh
+eBPF and the Cilium Datapath.pdf
+CNCF_TUG_Cloud Native Thinking for Telecommunications.pdf
+five-challenges-to-microservices-white-paper.pdf
+introduction-to-cloud-native-intel-network-builders-university.pdf
+MICROS_2.PDF
+microservices-solution-optimizations-with-intel-xeon-scalable-processor-solution-brief-1677130688.pdf
+network-and-edge-reference-system-architectures-portfolio-user-manual-1671520008.pdf（已高亮）
+Networking framework for tracing microservices_08182020.pptx
 
