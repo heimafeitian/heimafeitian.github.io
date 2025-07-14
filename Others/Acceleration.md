@@ -53,6 +53,8 @@ Intel AMX Technology Brief.pdf
 Intel® QuickAssist Technology Cryptographic .pdf
 qadcapiv213public .pdf
 
+709193_qat_quick_start_guide_007.pdf
+
 02 DLB  
 03 DSA  
 04 IAA  
