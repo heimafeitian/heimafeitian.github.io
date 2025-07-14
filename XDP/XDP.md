@@ -100,3 +100,13 @@ XDP-white1_checked.pptx
 cloud-native-data-plane-1654876801.pdf
 
 
+AF_XDP:
+CNDP
+cl-cloud-native-container-design-whitepaper-f8808kc-201710-v3-en.pdf
+CloudNativeDataPlane_CNDP_Overview_TechGuide_634083v3.pdf
+CloudNativeDataPlane_TechGuide_2021v2.pdf
+CloudNativeDataPlane_TechGuide_634083v1.pdf
+cloud-native-data-plane-cndp-overview-technology-guide-1653608048.pdf
+cloud-native-data-plane-cndp-overview-technology-guide-1665118976.pdf
+
+
