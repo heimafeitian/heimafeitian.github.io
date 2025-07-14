@@ -99,5 +99,45 @@ Enable true promiscuous mode and check unicast, multicast, broadcast traffic
 
 https://www.intel.cn/content/www/cn/zh/communications/ai-sd-wan.html
 
+#!/bin/bash
+ 
+now=$(date +"%H_%M_%d_%m_%Y")
+ 
+turbostat --quiet --show PkgWatt --interval 1 -o OUTPUT
+ 
+sed -i '/PkgWatt.*$/d' OUTPUT
+ 
+sed -n '0~3p' OUTPUT > socket_one
+ 
+ 
+sockone=$(awk '{print $1}' socket_one |  tr "\n" "," |  awk '{print '\r', $0}'  | sed s'/.$//')
+ 
+ 
+echo Socket 1,  $sockone>> /root/test_output_$now.csv
+
+#!/bin/sh
+#Core cache Freq
+
+Core(){
+#OS Setup the Core cache Freq
+Freq=`rdmsr -a 0x620 -f 6:0 |awk 'NR==1{print $1}'`
+echo Core cache Freq is $Freq
+
+#OS Get the Core cache Freq
+
+echo ==============================================================
+for i in `seq 0 128`
+do
+	echo Core $i: `rdmsr -p $i  0x621 -f 6:0` '|' set $Freq
+	#sleep 1
+done
+}
+
+
+while true
+do
+	Core
+	sleep 1
+done
 
 
