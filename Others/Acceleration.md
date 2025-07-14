@@ -76,6 +76,51 @@ SMx
 Storage
 
 
+ngine Development:
+
+Develop the custom engine implementation as a separate shared library, following the OpenSSL Engine API.
+Implement the necessary Engine API functions in the custom engine library, including initialization, cleanup, binding, and cryptographic operations.
+Load the Engine in Your Application:
+
+In your application code, before using any OpenSSL functions, load the custom engine using the OpenSSL function ENGINE_by_id().
+Pass the unique identifier of your custom engine to ENGINE_by_id() to obtain a pointer to the ENGINE structure representing the loaded engine.
+If the ENGINE_by_id() call returns NULL, it means the engine could not be loaded or is not available.
+Initialize and Use the Engine:
+
+Once you have a pointer to the ENGINE structure representing the loaded engine, initialize it by calling ENGINE_init().
+Use the returned ENGINE pointer to bind the engine to OpenSSL using ENGINE_set_default(), or explicitly specify the engine in OpenSSL function calls using EVP_PKEY_CTX_set0_engine() or similar functions.
+You can now use the engine for cryptographic operations, and OpenSSL will utilize your custom engine's implementation.
+Cleanup:
+
+When you're done using the custom engine, release the resources by calling ENGINE_finish() to shut down the engine.
+Optionally, you can unload the engine from memory using ENGINE_free().
+By following these steps, you can dynamically load and utilize your custom engine directly within your application, without relying on the OpenSSL configuration file. Ensure proper error handling and resource management throughout the process to ensure a smooth integration.
+
+static ENGINE *try_load_engine(const char *engine)
+{
+    ENGINE *e = NULL;
+
+    if ((e = ENGINE_by_id("dynamic")) != NULL) {
+        if (!ENGINE_ctrl_cmd_string(e, "SO_PATH", engine, 0)
+            || !ENGINE_ctrl_cmd_string(e, "LOAD", NULL, 0)) {
+            ENGINE_free(e);
+            e = NULL;
+        }
+    }
+    return e;
+}
+
+
+
+
+    ENGINE *e = ENGINE_by_id("dynamic");
+    ENGINE_ctrl_cmd_string(e, "SO_PATH", "/lib/libfoo.so", 0);
+    ENGINE_ctrl_cmd_string(e, "ID", "foo", 0);
+    ENGINE_ctrl_cmd_string(e, "LOAD", NULL, 0);
+    ENGINE_ctrl_cmd_string(e, "CMD_FOO", "some input data", 0);
+
+
+
 02 DLB  
 03 DSA  
 04 IAA  
