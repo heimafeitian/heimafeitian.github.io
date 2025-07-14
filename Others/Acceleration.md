@@ -1,4 +1,29 @@
 00 AMX  
+https://www.intel.com/content/www/us/en/customer-spotlight/stories/meituan-vision-ai-customer-story.html
+https://www.intel.com/content/www/us/en/developer/articles/technical/accelerate-tensorflow-ml-performance-amx.html
+https://www.intel.com/content/www/us/en/developer/articles/technical/accelerate-pytorch-training-inference-on-amx.html?wapkw=AMX#gs.057eia
+https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/what-is-intel-amx.html?wapkw=AMX
+https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview-video.html
+https://www.intel.com/content/www/us/en/developer/articles/guide/bert-ai-inference-amx-4th-gen-xeon-scalable.html?wapkw=Intel%C2%AE%20Advanced%20Matrix%20Extensions
+https://www.intel.com/content/www/us/en/developer/articles/technical/tuning-guide-for-ai-on-the-4th-generation.html?wapkw=%20AI%20on%204th%20Gen%20Intel%20Xeon%20Scalable%20processors%20tuning%20guide
+https://www.intel.com/content/www/us/en/developer/articles/technical/tuning-guide-for-ai-on-the-4th-generation.html
+intel AMX Support Lands For Linux 5.16
+https://www.phoronix.com/news/Intel-AMX-Lands-In-Linux
+
+
+22-cmf-225-verify-xeon-built-in-ai-acceleration-technology-amx-helps-baidu-ernie-tiny-boost-performance-by-up-to-2.66x-1129update-white-pape.pdf
+2023.11_Intel SPR AMX & Perf.pptx
+2023-Tech-Connect-DCAI-Bring-AMX-to-Life-Get-Most-Out-Through Software.pdf
+772231-SPR AMX freq characteristics v1.0.pdf
+784471_AI Acceleration using Intel AMX-TMUL.pdf
+Accelerate AI Workloads with Intel AMX_update.pdf
+accelerate-ai-with-amx-sb.pdf
+amx-enhances-ai-inference-performance-alibaba-brief-pdf.pdf
+amx-qucik-start-guide.pdf
+i360_23-Enabling Your Customers to Build-and Deploy-AI-Everywhere.pdf
+Intel AMX Technology Brief.pdf
+
+
 01 QAT  
 02 DLB  
 03 DSA  
