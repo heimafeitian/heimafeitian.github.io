@@ -1,0 +1,9 @@
+enhanced-utilization-telemetry-for-polling-workloads-with-collectd-and-the-data-plane-development-kit-dpdk-user-guide.pdf
+Power Management - Technology Overview TechGuide_637748v2.pdf
+Power_management_debug.pdf
+Power_Management_Leveraging_AI_Smarter_DC_Power_Efficiency_Solution_Brief_742231v2.pdf
+Power_Mgmt_User_Wait_Instructions_Power_Saving_TechGuide_751859v4.pdf
+power-management-enhanced-power-management-for-low-latency-workloads-technology-guide-1617438252.pdf
+power-manager-kubernetes-operator-technology-guide-1645720030.pdf
+Sustainability-Power_Insights_Kit_Technology_Guide_7302491v1.pdf
+Tele_Aware_Schedl_Enhancement_Utilization_Platform_Aware_Schedl_Tech_Guide_648029v2.pdf
