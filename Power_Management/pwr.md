@@ -54,6 +54,25 @@ check the Result
 
 
 
+ 
+ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
+
+ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+ 
+ 
+ cpupower -c all frequency-info
+ 
+ cpupower -c all frequency-set -g performance
+ 
+ cpupower -c all frequency-set -g powersave
+ 
+ cpupower frequency-info
+ 
+ cpupower frequency-set -g performance
+ 
+ 
+ 
+cpupower -c all frequency-set -f 0.8GHZ
 
 
